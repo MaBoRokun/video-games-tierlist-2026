@@ -1,0 +1,7 @@
+# Python cache and scratch
+__pycache__/
+*.pyc
+generate.py
+update_tierlist_with_images.py
+build.py
+games_pc.json
