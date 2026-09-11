@@ -4,12 +4,19 @@ import json
 import html
 import urllib.parse
 
+# 50 games meeting:
+# 1. 1M+ copies sold
+# 2. Metacritic 70+
+# 3. DLC, big Expansion or Enhanced/Enchanted version included
+# 4. Most anticipated releases of late 2026
+
 games = [
-    # --- ALREADY RELEASED HITS (80+ METACRITIC & 1M+ SALES, ORIGINAL 2026 RELEASES) ---
+    # --- ALREADY RELEASED HITS (70+ METACRITIC & 1M+ SALES, ORIGINAL RELEASES) ---
     {
         "id": "forza-horizon-6",
         "title": "Forza Horizon 6",
         "type": "hit",
+        "subtype": "original",
         "meta": "91",
         "sales": "6.4M+",
         "status": "Вышла 19 мая 2026",
@@ -20,6 +27,7 @@ games = [
         "id": "resident-evil-requiem",
         "title": "Resident Evil Requiem",
         "type": "hit",
+        "subtype": "original",
         "meta": "89",
         "sales": "6.0M+",
         "status": "Вышла 27 фев 2026",
@@ -30,6 +38,7 @@ games = [
         "id": "007-first-light",
         "title": "007 First Light",
         "type": "hit",
+        "subtype": "original",
         "meta": "87",
         "sales": "4.0M+",
         "status": "Вышла 26 мая 2026",
@@ -40,6 +49,7 @@ games = [
         "id": "pragmata",
         "title": "Pragmata",
         "type": "hit",
+        "subtype": "original",
         "meta": "85",
         "sales": "2.5M+",
         "status": "Вышла 17 апр 2026",
@@ -50,6 +60,7 @@ games = [
         "id": "pokemon-pokopia",
         "title": "Pokémon Pokopia",
         "type": "hit",
+        "subtype": "original",
         "meta": "89",
         "sales": "2.2M+",
         "status": "Вышла 5 мар 2026",
@@ -57,9 +68,21 @@ games = [
         "lines": ["POKÉMON", "POKOPIA"]
     },
     {
+        "id": "god-of-war-sons-of-sparta",
+        "title": "God of War: Sons of Sparta",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "84",
+        "sales": "2.0M+",
+        "status": "Вышла 12 фев 2026",
+        "platforms": "PlayStation 5",
+        "lines": ["GOD OF WAR", "SONS OF", "SPARTA"]
+    },
+    {
         "id": "college-football-27",
         "title": "EA Sports College Football 27",
         "type": "hit",
+        "subtype": "original",
         "meta": "84",
         "sales": "2.5M+",
         "status": "Вышла 9 июл 2026",
@@ -70,6 +93,7 @@ games = [
         "id": "lego-batman",
         "title": "LEGO Batman: Legacy of the Dark Knight",
         "type": "hit",
+        "subtype": "original",
         "meta": "84",
         "sales": "1.2M+",
         "status": "Вышла 22 мая 2026",
@@ -77,19 +101,32 @@ games = [
         "lines": ["LEGO BATMAN", "LEGACY OF", "DARK KNIGHT"]
     },
     {
-        "id": "halo-campaign-evolved",
-        "title": "Halo: Campaign Evolved",
+        "id": "big-walk",
+        "title": "Big Walk",
         "type": "hit",
-        "meta": "81",
-        "sales": "1.2M+",
-        "status": "Вышла 28 июл 2026",
-        "platforms": "PC, XSX, PS5",
-        "lines": ["HALO", "CAMPAIGN", "EVOLVED"]
+        "subtype": "original",
+        "meta": "83",
+        "sales": "1.0M+",
+        "status": "Вышла 4 авг 2026",
+        "platforms": "PC, PS5, Switch 2, Mac",
+        "lines": ["BIG WALK"]
+    },
+    {
+        "id": "the-blood-of-dawnwalker",
+        "title": "The Blood of Dawnwalker",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "83",
+        "sales": "1.0M+",
+        "status": "Вышла 3 сен 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["THE BLOOD OF", "DAWNWALKER"]
     },
     {
         "id": "marvel-tokon",
         "title": "MARVEL Tōkon: Fighting Souls",
         "type": "hit",
+        "subtype": "original",
         "meta": "82",
         "sales": "1.0M+",
         "status": "Вышла 6 авг 2026",
@@ -97,9 +134,43 @@ games = [
         "lines": ["MARVEL TŌKON", "FIGHTING SOULS"]
     },
     {
+        "id": "resonance-plague-tale",
+        "title": "Resonance: A Plague Tale Legacy",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "82",
+        "sales": "1.0M+",
+        "status": "Вышла 27 авг 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["RESONANCE", "A PLAGUE TALE", "LEGACY"]
+    },
+    {
+        "id": "halo-campaign-evolved",
+        "title": "Halo: Campaign Evolved",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "81",
+        "sales": "1.2M+",
+        "status": "Вышла 28 июл 2026",
+        "platforms": "PC, XSX, PS5",
+        "lines": ["HALO", "CAMPAIGN", "EVOLVED"]
+    },
+    {
+        "id": "splatoon-raiders",
+        "title": "Splatoon Raiders",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "81",
+        "sales": "1.0M+",
+        "status": "Вышла 23 июл 2026",
+        "platforms": "Nintendo Switch 2",
+        "lines": ["SPLATOON", "RAIDERS"]
+    },
+    {
         "id": "nioh-3",
         "title": "Nioh 3",
         "type": "hit",
+        "subtype": "original",
         "meta": "86",
         "sales": "1.0M+",
         "status": "Вышла 6 фев 2026",
@@ -110,6 +181,7 @@ games = [
         "id": "mewgenics",
         "title": "Mewgenics",
         "type": "hit",
+        "subtype": "original",
         "meta": "89",
         "sales": "1.0M+",
         "status": "Вышла 10 фев 2026",
@@ -117,19 +189,10 @@ games = [
         "lines": ["MEWGENICS"]
     },
     {
-        "id": "the-blood-of-dawnwalker",
-        "title": "The Blood of Dawnwalker",
-        "type": "hit",
-        "meta": "83",
-        "sales": "1.0M+",
-        "status": "Вышла 3 сен 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["THE BLOOD OF", "DAWNWALKER"]
-    },
-    {
         "id": "onimusha-way-of-the-sword",
         "title": "Onimusha: Way of the Sword",
         "type": "hit",
+        "subtype": "original",
         "meta": "85",
         "sales": "1.0M+",
         "status": "Вышла 4 сен 2026",
@@ -140,18 +203,198 @@ games = [
         "id": "reanimal",
         "title": "Reanimal",
         "type": "hit",
+        "subtype": "original",
         "meta": "80",
         "sales": "1.0M+",
         "status": "Вышла 13 фев 2026",
         "platforms": "PC, PS5, XSX, Switch 2",
         "lines": ["REANIMAL"]
     },
+    {
+        "id": "star-wars-zero-company",
+        "title": "Star Wars Zero Company",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "78",
+        "sales": "1.1M+",
+        "status": "Вышла 27 авг 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["STAR WARS", "ZERO COMPANY"]
+    },
+    {
+        "id": "gothic-1-remake",
+        "title": "Gothic 1 Remake",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "76",
+        "sales": "1.2M+",
+        "status": "Вышла 5 июн 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["GOTHIC 1", "REMAKE"]
+    },
+    {
+        "id": "beast-of-reincarnation",
+        "title": "Beast of Reincarnation",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "75",
+        "sales": "1.0M+",
+        "status": "Вышла 4 авг 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["BEAST OF", "REINCARNATION"]
+    },
+    {
+        "id": "nba-2k27",
+        "title": "NBA 2K27",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "73",
+        "sales": "3.2M+",
+        "status": "Вышла 4 сен 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["NBA 2K27"]
+    },
+    {
+        "id": "high-on-life-2",
+        "title": "High On Life 2",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "73",
+        "sales": "1.0M+",
+        "status": "Вышла 13 фев 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["HIGH ON LIFE 2"]
+    },
+    {
+        "id": "code-vein-2",
+        "title": "CODE VEIN II",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "72",
+        "sales": "1.2M+",
+        "status": "Вышла 29 янв 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["CODE VEIN II"]
+    },
+    {
+        "id": "madden-nfl-27",
+        "title": "EA Sports Madden NFL 27",
+        "type": "hit",
+        "subtype": "original",
+        "meta": "71",
+        "sales": "2.8M+",
+        "status": "Вышла 13 авг 2026",
+        "platforms": "PC, PS5, XSX, Switch 2",
+        "lines": ["EA SPORTS", "MADDEN NFL 27"]
+    },
 
-    # --- MOST ANTICIPATED & UPCOMING BLOCKBUSTERS OF 2026 (ORIGINAL GAMES) ---
+    # --- DLC, BIG EXPANSIONS & ENHANCED / ENCHANTED EDITIONS (70+ METACRITIC & 1M+ SALES) ---
+    {
+        "id": "elden-ring-tarnished-edition",
+        "title": "Elden Ring: Tarnished Edition",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "94",
+        "sales": "1.5M+",
+        "status": "Вышла 28 авг 2026",
+        "platforms": "Switch 2, PC, PS5, XSX",
+        "lines": ["ELDEN RING", "TARNISHED", "EDITION"]
+    },
+    {
+        "id": "death-stranding-2",
+        "title": "Death Stranding 2: On The Beach",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "89",
+        "sales": "2.0M+",
+        "status": "Вышла 19 мар 2026 (PC)",
+        "platforms": "PC, PlayStation 5",
+        "lines": ["DEATH", "STRANDING 2"]
+    },
+    {
+        "id": "diablo-4-lord-of-hatred",
+        "title": "Diablo IV: Lord of Hatred",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "83",
+        "sales": "2.0M+",
+        "status": "Вышла 28 апр 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["DIABLO IV", "LORD OF", "HATRED"]
+    },
+    {
+        "id": "wow-midnight",
+        "title": "World of Warcraft: Midnight",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "82",
+        "sales": "3.0M+",
+        "status": "Вышла 2 мар 2026",
+        "platforms": "PC, Mac",
+        "lines": ["WORLD OF", "WARCRAFT", "MIDNIGHT"]
+    },
+    {
+        "id": "dragon-quest-7-reimagined",
+        "title": "Dragon Quest VII Reimagined",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "82",
+        "sales": "1.1M+",
+        "status": "Вышла 5 фев 2026",
+        "platforms": "PC, PS5, XSX, Switch 2",
+        "lines": ["DRAGON QUEST VII", "REIMAGINED"]
+    },
+    {
+        "id": "yakuza-kiwami-3",
+        "title": "Yakuza Kiwami 3 & Dark Ties",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "79",
+        "sales": "1.3M+",
+        "status": "Вышла 11 фев 2026",
+        "platforms": "PC, PS5, XSX, Switch 2",
+        "lines": ["YAKUZA KIWAMI 3", "& DARK TIES"]
+    },
+    {
+        "id": "ac-black-flag-resynced",
+        "title": "Assassin's Creed Black Flag Resynced",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "79",
+        "sales": "1.8M+",
+        "status": "Вышла 9 июл 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["AC BLACK FLAG", "RESYNCED"]
+    },
+    {
+        "id": "mgs-master-collection-vol-2",
+        "title": "Metal Gear Solid: Master Collection Vol. 2",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "78",
+        "sales": "1.2M+",
+        "status": "Вышла 27 авг 2026",
+        "platforms": "PC, PS5, XSX, Switch 2",
+        "lines": ["METAL GEAR SOLID", "COLLECTION", "VOL. 2"]
+    },
+    {
+        "id": "crimson-desert-enhanced",
+        "title": "Crimson Desert Enhanced",
+        "type": "hit",
+        "subtype": "expansion",
+        "meta": "77",
+        "sales": "2.5M+",
+        "status": "Вышла 19 мар 2026",
+        "platforms": "PC, PS5, Xbox Series X/S",
+        "lines": ["CRIMSON DESERT", "ENHANCED"]
+    },
+
+    # --- MOST ANTICIPATED & UPCOMING BLOCKBUSTERS OF LATE 2026 ---
     {
         "id": "gta-vi",
         "title": "Grand Theft Auto VI",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 100",
         "sales": "19 Ноября 2026",
         "status": "Релиз 19 ноября 2026 (Rockstar)",
@@ -162,6 +405,7 @@ games = [
         "id": "marvels-wolverine",
         "title": "Marvel's Wolverine",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 98",
         "sales": "15 Сентября 2026",
         "status": "Релиз 15 сентября 2026 (Insomniac)",
@@ -172,6 +416,7 @@ games = [
         "id": "control-resonant",
         "title": "Control Resonant",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 94",
         "sales": "24 Сентября 2026",
         "status": "Релиз 24 сентября 2026 (Remedy)",
@@ -182,6 +427,7 @@ games = [
         "id": "silent-hill-townfall",
         "title": "Silent Hill: Townfall",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 93",
         "sales": "24 Сентября 2026",
         "status": "Релиз 24 сентября 2026 (Konami)",
@@ -192,6 +438,7 @@ games = [
         "id": "ea-sports-fc-27",
         "title": "EA Sports FC 27",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 92",
         "sales": "24 Сентября 2026",
         "status": "Релиз 24 сентября 2026 (EA)",
@@ -199,9 +446,21 @@ games = [
         "lines": ["EA SPORTS", "FC 27"]
     },
     {
+        "id": "rayman-legends-retold",
+        "title": "Rayman Legends Retold",
+        "type": "anticipated",
+        "subtype": "expansion",
+        "meta": "HYPE 88",
+        "sales": "1 Октября 2026",
+        "status": "Релиз 1 октября 2026 (Ubisoft)",
+        "platforms": "PC, PS5, XSX, Switch 2",
+        "lines": ["RAYMAN", "LEGENDS RETOLD"]
+    },
+    {
         "id": "ace-combat-8",
         "title": "Ace Combat 8: Wings of Theve",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 91",
         "sales": "2 Октября 2026",
         "status": "Релиз 2 октября 2026 (Bandai Namco)",
@@ -212,6 +471,7 @@ games = [
         "id": "gears-of-war-e-day",
         "title": "Gears of War: E-Day",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 96",
         "sales": "6 Октября 2026",
         "status": "Релиз 6 октября 2026 (Xbox Studios)",
@@ -222,6 +482,7 @@ games = [
         "id": "star-wars-galactic-racer",
         "title": "Star Wars: Galactic Racer",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 90",
         "sales": "6 Октября 2026",
         "status": "Релиз 6 октября 2026 (Lucasfilm)",
@@ -232,6 +493,7 @@ games = [
         "id": "castlevania-belmonts-curse",
         "title": "Castlevania: Belmont's Curse",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 92",
         "sales": "15 Октября 2026",
         "status": "Релиз 15 октября 2026 (Konami)",
@@ -242,6 +504,7 @@ games = [
         "id": "cod-modern-warfare-4",
         "title": "Call of Duty: Modern Warfare 4",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 95",
         "sales": "23 Октября 2026",
         "status": "Релиз 23 октября 2026 (Activision)",
@@ -252,6 +515,7 @@ games = [
         "id": "phantom-blade-zero",
         "title": "Phantom Blade Zero",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 94",
         "sales": "29 Октября 2026",
         "status": "Релиз 29 октября 2026 (S-Game)",
@@ -262,6 +526,7 @@ games = [
         "id": "zelda-ocarina-of-time",
         "title": "The Legend of Zelda: Ocarina of Time (2026)",
         "type": "anticipated",
+        "subtype": "expansion",
         "meta": "HYPE 99",
         "sales": "5 Ноября 2026",
         "status": "Релиз 5 ноября 2026 (Nintendo)",
@@ -272,6 +537,7 @@ games = [
         "id": "warhammer-dawn-of-war-4",
         "title": "Warhammer 40,000: Dawn of War IV",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 91",
         "sales": "3 Декабря 2026",
         "status": "Релиз 3 декабря 2026 (Sega / Relic)",
@@ -279,9 +545,21 @@ games = [
         "lines": ["WARHAMMER", "DAWN OF", "WAR IV"]
     },
     {
+        "id": "monster-hunter-wilds-switch2",
+        "title": "Monster Hunter Wilds (Switch 2)",
+        "type": "anticipated",
+        "subtype": "expansion",
+        "meta": "HYPE 95",
+        "sales": "4 Декабря 2026",
+        "status": "Релиз 4 декабря 2026 (Capcom)",
+        "platforms": "Nintendo Switch 2",
+        "lines": ["MONSTER HUNTER", "WILDS (SWITCH 2)"]
+    },
+    {
         "id": "professor-layton-steam",
         "title": "Professor Layton & the New World of Steam",
         "type": "anticipated",
+        "subtype": "original",
         "meta": "HYPE 90",
         "sales": "10 Декабря 2026",
         "status": "Релиз 10 декабря 2026 (Level-5)",
@@ -316,23 +594,34 @@ def make_svg(game):
     text_tspans = ""
     for i, line in enumerate(lines):
         y = start_y + i * 25
-        text_tspans += f'<text x="80" y="{y}" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="0.2">{html.escape(line)}</text>\\n'
+        text_tspans += f'<text x="80" y="{y}" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="0.2">{html.escape(line)}</text>\\n'
 
     is_hit = game.get("type") == "hit"
-    top_badge_bg = "#f2f2f2" if is_hit else "#fef3c7"
-    top_badge_color = "#444444" if is_hit else "#b45309"
-    top_badge_text = "★ 2026 HIT ★" if is_hit else "🔥 ANTICIPATED"
+    is_expansion = game.get("subtype") == "expansion"
+
+    if is_expansion:
+        top_badge_bg = "#ede9fe"
+        top_badge_color = "#6d28d9"
+        top_badge_text = "✨ DLC / EXPANSION"
+    elif is_hit:
+        top_badge_bg = "#dcfce7"
+        top_badge_color = "#15803d"
+        top_badge_text = "★ 2026 HIT (70+) ★"
+    else:
+        top_badge_bg = "#fef3c7"
+        top_badge_color = "#b45309"
+        top_badge_text = "🔥 ANTICIPATED"
 
     bottom_bg = "#000000" if is_hit else "#1e3a8a"
     sub1 = f"META: {game['meta']}" if is_hit else "COMING SOON"
     sub2 = f"{game['sales']} COPIES" if is_hit else f"{game['sales']}"
-    sub2_color = "#4ade80" if is_hit else "#fbbf24"
+    sub2_color = "#a78bfa" if is_expansion else ("#4ade80" if is_hit else "#fbbf24")
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="160" height="240" viewBox="0 0 160 240">
   <rect width="160" height="240" fill="#ffffff"/>
   <rect x="4" y="4" width="152" height="232" fill="#ffffff" stroke="#000000" stroke-width="2.5" rx="3"/>
   <rect x="8" y="8" width="144" height="22" fill="{top_badge_bg}" rx="2"/>
-  <text x="80" y="23" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="900" fill="{top_badge_color}" text-anchor="middle" letter-spacing="1">{top_badge_text}</text>
+  <text x="80" y="23" font-family="Arial, Helvetica, sans-serif" font-size="8.5" font-weight="900" fill="{top_badge_color}" text-anchor="middle" letter-spacing="0.5">{top_badge_text}</text>
   
   {text_tspans}
   
@@ -349,6 +638,7 @@ for g in games:
 
 hits_count = sum(1 for g in games if g["type"] == "hit")
 antic_count = sum(1 for g in games if g["type"] == "anticipated")
+expansions_count = sum(1 for g in games if g.get("subtype") == "expansion")
 total_count = len(games)
 
 covers_json = json.dumps(custom_covers)
@@ -359,7 +649,7 @@ html_template = f'''<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Games TierList 2026 (Hits & Most Anticipated) - TierMaker</title>
+    <title>Video Games TierList 2026 (70+ Meta, 1M+ Sales, DLC & Anticipated) - TierMaker</title>
     <style>
         * {{
             box-sizing: border-box;
@@ -507,6 +797,7 @@ html_template = f'''<!DOCTYPE html>
         .badge.green {{ border-color: #4ade80; }}
         .badge.yellow {{ border-color: #fbbf24; }}
         .badge.blue {{ border-color: #60a5fa; }}
+        .badge.purple {{ border-color: #a78bfa; }}
 
         /* TIER LIST TABLE */
         #tier-wrap {{
@@ -618,18 +909,16 @@ html_template = f'''<!DOCTYPE html>
             flex-shrink: 0;
         }}
 
-        .character:active {{
-            cursor: grabbing;
-        }}
-
         .character:hover {{
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+            transform: scale(1.04);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.8);
+            z-index: 10;
         }}
 
-        .character.dragging {{
-            opacity: 0.35;
-            transform: scale(0.95);
+        .character:active, .character.dragging {{
+            cursor: grabbing;
+            opacity: 0.45;
+            transform: scale(0.96);
         }}
 
         .character img {{
@@ -647,47 +936,27 @@ html_template = f'''<!DOCTYPE html>
             right: 0;
             background: rgba(0,0,0,0.85);
             color: #fff;
-            font-size: 9px;
-            padding: 3px 4px;
+            font-size: 9.5px;
+            font-weight: 700;
+            line-height: 1.15;
+            padding: 3px 2px;
             text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.15s;
             pointer-events: none;
+            word-break: break-word;
+            border-top: 1px solid rgba(255,255,255,0.2);
         }}
+
         .character:hover .card-tooltip {{
             opacity: 1;
         }}
 
-        /* FILTER TABS */
-        .filter-tabs {{
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }}
-        .filter-tab {{
-            background: #242222;
-            color: #bbb;
-            border: 1px solid #444;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }}
-        .filter-tab.active, .filter-tab:hover {{
-            background: #3a5795;
-            color: #fff;
-            border-color: #7fbfff;
-        }}
-
-        /* POOL AREA */
+        /* UNRANKED POOL */
         #pool-container {{
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 6px;
+            background: #1e1e1e;
+            border: 2px solid #333;
+            border-radius: 4px;
             padding: 15px;
             margin-bottom: 25px;
         }}
@@ -698,7 +967,7 @@ html_template = f'''<!DOCTYPE html>
             align-items: center;
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #333;
         }}
 
         .pool-title {{
@@ -718,57 +987,82 @@ html_template = f'''<!DOCTYPE html>
             border-radius: 10px;
         }}
 
+        .filter-tabs {{
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }}
+
+        .filter-tab {{
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #ccc;
+            padding: 5px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }}
+
+        .filter-tab:hover {{
+            background: #383838;
+            color: #fff;
+        }}
+
+        .filter-tab.active {{
+            background: #2563eb;
+            color: #fff;
+            border-color: #3b82f6;
+        }}
+
         #unranked-pool {{
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            min-height: 130px;
-            background: #111;
+            gap: 6px;
+            min-height: 140px;
+            background: #141414;
             padding: 10px;
             border-radius: 4px;
             border: 1px dashed #444;
-            align-content: flex-start;
         }}
 
-        #unranked-pool.drag-over {{
-            background: #1e1e1e;
-            border-color: #7fbfff;
-        }}
-
-        /* BUTTONS */
+        /* ACTION BUTTONS */
         .actions-bar {{
             display: flex;
-            flex-wrap: wrap;
             gap: 12px;
-            justify-content: center;
-            margin: 15px 0 35px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
         }}
 
         .btn-action {{
-            background: #242222;
+            background: #2e2e2e;
             color: #fff;
-            border: 1px solid #666;
-            padding: 10px 22px;
-            font-size: 15px;
+            border: 1px solid #444;
+            padding: 9px 18px;
+            font-size: 14px;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
+            transition: 0.15s;
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }}
+
         .btn-action:hover {{
-            background: #333;
-            border-color: #888;
+            background: #3e3e3e;
         }}
+
         .btn-action.primary {{
-            background: #3a5795;
-            border-color: #4a6bb5;
+            background: #2563eb;
+            border-color: #3b82f6;
         }}
         .btn-action.primary:hover {{
-            background: #476bb8;
+            background: #1d4ed8;
         }}
+
         .btn-action.danger {{
             background: #7f1d1d;
             border-color: #991b1b;
@@ -777,106 +1071,103 @@ html_template = f'''<!DOCTYPE html>
             background: #991b1b;
         }}
 
-        /* MODAL */
+        /* SETTINGS MODAL */
         #modal-overlay {{
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.8);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.75);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            backdrop-filter: blur(2px);
         }}
 
         #modal-box {{
-            background: #242323;
-            border: 1px solid #555;
-            border-radius: 8px;
-            padding: 24px;
-            width: 90%;
-            max-width: 450px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            width: 360px;
+            padding: 20px;
             position: relative;
         }}
 
         #modal-close {{
             position: absolute;
-            top: 15px;
-            right: 18px;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 20px;
+            top: 12px; right: 14px;
+            background: none; border: none;
+            color: #888; font-size: 18px;
             cursor: pointer;
+        }}
+        #modal-close:hover {{ color: #fff; }}
+
+        .modal-input {{
+            width: 100%;
+            background: #151515;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            margin-bottom: 14px;
+            outline: none;
         }}
 
         .color-palette {{
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
-            margin: 14px 0;
+            margin-bottom: 16px;
         }}
 
         .color-swatch {{
-            width: 100%;
-            height: 36px;
+            height: 32px;
             border-radius: 4px;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: transform 0.12s;
+            transition: transform 0.1s;
         }}
         .color-swatch:hover {{
-            transform: scale(1.08);
+            transform: scale(1.1);
             border-color: #fff;
-        }}
-
-        .modal-input {{
-            width: 100%;
-            padding: 10px 12px;
-            background: #181818;
-            border: 1px solid #555;
-            color: #fff;
-            font-size: 15px;
-            border-radius: 4px;
-            margin: 10px 0 18px 0;
         }}
 
         .modal-footer {{
             display: flex;
-            gap: 8px;
             justify-content: flex-end;
+            gap: 8px;
         }}
 
-        /* TABLE */
+        /* INFO TABLE */
         .info-panel {{
-            background: #1c1c1c;
+            background: #1e1e1e;
             border: 1px solid #333;
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 20px;
-            margin-top: 20px;
+            margin-top: 15px;
         }}
+
         .info-panel h3 {{
             color: #fff;
-            font-size: 18px;
+            font-size: 17px;
             margin-bottom: 12px;
         }}
+
         .info-table {{
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }}
+
         .info-table th, .info-table td {{
-            padding: 9px 12px;
+            padding: 8px 12px;
             text-align: left;
-            border-bottom: 1px solid #2a2a2a;
+            border-bottom: 1px solid #2d2d2d;
         }}
+
         .info-table th {{
-            color: #fff;
-            background: #242424;
+            color: #aaa;
+            background: #181818;
+            font-weight: 600;
         }}
         .info-table td {{
             color: #ccc;
@@ -909,19 +1200,18 @@ html_template = f'''<!DOCTYPE html>
     <div id="main-container">
         
         <div id="breadcrumbs">
-            <a href="#">Video Games</a> / <span>Video Games TierList (2026: Original Hits & Most Anticipated)</span> /
+            <a href="#">Video Games</a> / <span>Video Games TierList 2026 (70+ Meta, 1M+ Sales, DLC & Anticipated)</span> /
         </div>
 
-        <h1>Video Games TierList 2026 (Original Releases & Anticipated Blockbusters)</h1>
+        <h1>Video Games TierList 2026 (70+ Metacritic, 1M+ Sales, DLC & Anticipated)</h1>
         <p class="description">
-            Интерактивный Tier List главных оригинальных релизов 2026 года (все переиздания и порты исключены). 
-            Включает вышедшие суперхиты (80+ Metacritic и 1M+ продаж) и самые ожидаемые новинки от ведущих игровых студий.
+            Интерактивный Tier List главных релизов 2026 года по обновлённым критериям: оценка Metacritic от 70+, продажи от 1 миллиона копий, а также крупные сюжетные DLC, масштабные дополнения, Enchanted/Enhanced издания и самые ожидаемые новинки от ведущих студий.
         </p>
 
         <div class="criteria-badges">
-            <span class="badge green">🏆 Вышедшие хиты 2026 года: 80+ Metacritic и 1M+ продаж</span>
-            <span class="badge blue">🔥 Самые ожидаемые новые игры конца 2026</span>
-            <span class="badge">🚫 Без портов с предыдущих лет / консолей</span>
+            <span class="badge green">🏆 Вышедшие игры 2026 года: 70+ Metacritic и 1M+ продаж</span>
+            <span class="badge purple">✨ Включая крупные DLC, расширения и Enchanted/Enhanced издания</span>
+            <span class="badge blue">🔥 Самые ожидаемые блокбастеры конца 2026 года</span>
         </div>
 
         <!-- TIER LIST BOARD -->
@@ -1026,7 +1316,8 @@ html_template = f'''<!DOCTYPE html>
 
             <div class="filter-tabs">
                 <button class="filter-tab active" onclick="filterCards('all', this)">Все ({total_count})</button>
-                <button class="filter-tab" onclick="filterCards('hit', this)">🏆 Вышедшие хиты ({hits_count})</button>
+                <button class="filter-tab" onclick="filterCards('hit', this)">🏆 Релизы 70+ & 1M+ ({hits_count})</button>
+                <button class="filter-tab" onclick="filterCards('expansion', this)">✨ DLC & Издания ({expansions_count})</button>
                 <button class="filter-tab" onclick="filterCards('anticipated', this)">🔥 Самые ожидаемые ({antic_count})</button>
             </div>
             
@@ -1045,7 +1336,7 @@ html_template = f'''<!DOCTYPE html>
 
         <!-- INFO TABLE ABOUT THE GAMES -->
         <div class="info-panel">
-            <h3>📊 Список всех {total_count} ключевых оригинальных игр 2026 года</h3>
+            <h3>📊 Список всех {total_count} ключевых игр 2026 года (70+ Metacritic, 1M+ продаж, DLC & Ожидаемые)</h3>
             <table class="info-table">
                 <thead>
                     <tr>
@@ -1332,6 +1623,7 @@ html_template = f'''<!DOCTYPE html>
                 card.setAttribute('data-game-id', game.id);
                 card.setAttribute('data-game-title', game.title);
                 card.setAttribute('data-game-type', game.type);
+                card.setAttribute('data-game-subtype', game.subtype || 'original');
 
                 const imgSrc = GAME_CUSTOM_COVERS[game.id] || ('images/' + game.id + '.jpg');
                 
@@ -1367,8 +1659,16 @@ html_template = f'''<!DOCTYPE html>
 
                 const tr = document.createElement('tr');
                 const isHit = game.type === 'hit';
-                const tagColor = isHit ? '#4ade80' : '#60a5fa';
-                const typeLabel = isHit ? ('★ ' + game.meta) : ('🔥 Ожидается (' + game.meta + ')');
+                const isExp = game.subtype === 'expansion';
+                let tagColor = '#60a5fa';
+                let typeLabel = '🔥 Ожидается (' + game.meta + ')';
+                if (isExp) {{
+                    tagColor = '#a78bfa';
+                    typeLabel = '✨ ' + (isHit ? ('★ ' + game.meta) : 'Ожидается') + ' (DLC/Изд.)';
+                }} else if (isHit) {{
+                    tagColor = '#4ade80';
+                    typeLabel = '★ ' + game.meta;
+                }}
                 tr.innerHTML = 
                     '<td style="font-weight:bold; color:#fff;">' + escapeHtml(game.title) + '</td>' +
                     '<td><span style="color:' + tagColor + '; font-weight:bold;">' + typeLabel + '</span></td>' +
@@ -1387,8 +1687,15 @@ html_template = f'''<!DOCTYPE html>
 
             document.querySelectorAll('#unranked-pool .character').forEach(card => {{
                 const cType = card.getAttribute('data-game-type');
-                if (type === 'all' || cType === type) {{
+                const cSubtype = card.getAttribute('data-game-subtype');
+                if (type === 'all') {{
                     card.style.display = 'block';
+                }} else if (type === 'hit') {{
+                    card.style.display = (cType === 'hit') ? 'block' : 'none';
+                }} else if (type === 'expansion') {{
+                    card.style.display = (cSubtype === 'expansion') ? 'block' : 'none';
+                }} else if (type === 'anticipated') {{
+                    card.style.display = (cType === 'anticipated') ? 'block' : 'none';
                 }} else {{
                     card.style.display = 'none';
                 }}
@@ -1645,7 +1952,7 @@ html_template = f'''<!DOCTYPE html>
             ctx.fillRect(0, 0, width, 60);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 20px Arial, sans-serif';
-            ctx.fillText('VIDEO GAMES 2026 TIER LIST (Original Hits & Anticipated)', 20, 37);
+            ctx.fillText('VIDEO GAMES 2026 TIER LIST (70+ Meta, 1M+ Sales, DLC & Anticipated)', 20, 37);
 
             ctx.fillStyle = '#888';
             ctx.font = '13px Arial, sans-serif';
@@ -1754,4 +2061,4 @@ html_template = f'''<!DOCTYPE html>
 with open("C:/Users/zdog0/.gemini/antigravity/scratch/tierlist-2026/index.html", "w", encoding="utf-8") as f:
     f.write(html_template)
 
-print(f"Generated index.html without ports! Total games: {total_count} ({hits_count} hits, {antic_count} anticipated). All {matched_count} images embedded.")
+print(f"Generated index.html with new requirements! Total games: {total_count} ({hits_count} hits, {expansions_count} DLC/editions, {antic_count} anticipated). All {matched_count} images embedded.")
