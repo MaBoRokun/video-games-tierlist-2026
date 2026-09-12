@@ -1176,6 +1176,72 @@ html_content = f'''<!DOCTYPE html>
             box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
         }}
 
+        
+        /* EDGE DELETE ZONES */
+        .edge-delete-zone {{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 75px;
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s, background-color 0.2s, box-shadow 0.2s;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 10px;
+            line-height: 1.4;
+            user-select: none;
+        }}
+        .edge-delete-zone.left {{
+            left: 0;
+            background: linear-gradient(to right, rgba(220, 38, 38, 0.4), transparent);
+            border-right: 2px dashed rgba(239, 68, 68, 0.6);
+        }}
+        .edge-delete-zone.right {{
+            right: 0;
+            background: linear-gradient(to left, rgba(220, 38, 38, 0.4), transparent);
+            border-left: 2px dashed rgba(239, 68, 68, 0.6);
+        }}
+        .edge-delete-zone.dragging-active {{
+            opacity: 0.4;
+        }}
+        .edge-delete-zone.active {{
+            opacity: 1 !important;
+            background: rgba(220, 38, 38, 0.88) !important;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.85) !important;
+            border-color: #ffffff !important;
+        }}
+
+        /* TOAST NOTIFICATION */
+        #toast-notification {{
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #4ade80;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 3000;
+            pointer-events: none;
+            opacity: 0;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+        }}
+        #toast-notification.toast-show {{
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }}
+
         /* FOOTER TABLE */
         .games-table-container {{
             margin-top: 30px;
@@ -1358,6 +1424,15 @@ html_content = f'''<!DOCTYPE html>
             </table>
         </div>
     </main>
+    <!-- EDGE DELETE ZONES -->
+    <div id="edge-delete-left" class="edge-delete-zone left">
+        <span>🗑️<br>Удалить<br>из списка</span>
+    </div>
+    <div id="edge-delete-right" class="edge-delete-zone right">
+        <span>🗑️<br>Удалить<br>из списка</span>
+    </div>
+    <div id="toast-notification"></div>
+
 
     <!-- MODAL FOR ROW EDIT -->
     <div id="modal-overlay">
@@ -1399,14 +1474,24 @@ html_content = f'''<!DOCTYPE html>
     <canvas id="export-canvas"></canvas>
 
     <script>
-        const STORAGE_KEY = 'tierlist_2026_state_v4';
+        const STORAGE_KEY = 'tierlist_2026_state_v5';
         const STORAGE_CUSTOM_GAMES = 'tierlist_2026_custom_games';
-        const STORAGE_SAVED_COVERS = 'tierlist_2026_saved_covers_v4';
+        const STORAGE_SAVED_COVERS = 'tierlist_2026_saved_covers_v5';
+        const STORAGE_DELETED_GAMES = 'tierlist_2026_deleted_games_v1';
 
-        // Wipe old wrong posters cache on next launch
-        try {{
+        // 1-TIME WIPE: Clear all previously cached wrong posters on next launch
+        const CACHE_WIPE_FLAG = 'tierlist_2026_cache_wiped_v5';
+        if (!localStorage.getItem(CACHE_WIPE_FLAG)) {{
             localStorage.removeItem('tierlist_2026_saved_covers');
             localStorage.removeItem('tierlist_2026_saved_covers_v3');
+            localStorage.removeItem('tierlist_2026_saved_covers_v4');
+            localStorage.removeItem('tierlist_2026_saved_covers_v5');
+            localStorage.setItem(CACHE_WIPE_FLAG, 'true');
+        }}
+
+        let deletedGames = new Set();
+        try {{
+            deletedGames = new Set(JSON.parse(localStorage.getItem(STORAGE_DELETED_GAMES) || '[]'));
         }} catch(e) {{}}
 
         const BASE_GAMES = {games_json};
@@ -1554,8 +1639,8 @@ html_content = f'''<!DOCTYPE html>
                 }}
             }}
 
-            // 2. Search query MUST explicitly be: "[Game_Name] game poster"
-            const searchQuery = `${{game.title}} game poster`;
+            // 2. Search query MUST explicitly be: "[Game_Name] official game poster"
+            const searchQuery = `${{game.title}} official game poster`;
             try {{
                 const wikiSearchUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${{encodeURIComponent(searchQuery)}}&prop=images&format=json&origin=*`;
                 const resp = await fetch(wikiSearchUrl);
@@ -1747,6 +1832,10 @@ html_content = f'''<!DOCTYPE html>
                 alert(`Игра "${{game.title}}" уже добавлена в тир-лист!`);
                 return;
             }}
+            deletedGames.delete(game.id);
+            try {{
+                localStorage.setItem(STORAGE_DELETED_GAMES, JSON.stringify([...deletedGames]));
+            }} catch(e) {{}}
 
             const btn = document.getElementById('btn-add-' + game.id);
             if (btn) {{
@@ -2047,6 +2136,7 @@ html_content = f'''<!DOCTYPE html>
             tableBody.innerHTML = '';
 
             GAMES_DATA.forEach(game => {{
+                if (deletedGames.has(game.id)) return;
                 const card = createCardElement(game);
                 pool.appendChild(card);
 
@@ -2085,20 +2175,184 @@ html_content = f'''<!DOCTYPE html>
             }});
         }}
 
+        let currentDragPoint = null;
+        let lastKnownDragPoint = null;
+
+        function showNotification(msg) {{
+            const toast = document.getElementById('toast-notification');
+            if (toast) {{
+                toast.textContent = msg;
+                toast.classList.add('toast-show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {{
+                    toast.classList.remove('toast-show');
+                }}, 3000);
+            }}
+        }}
+
+        function showEdgeDeleteZones() {{
+            const left = document.getElementById('edge-delete-left');
+            const right = document.getElementById('edge-delete-right');
+            if (left) left.classList.add('dragging-active');
+            if (right) right.classList.add('dragging-active');
+        }}
+
+        function hideEdgeDeleteZones() {{
+            const left = document.getElementById('edge-delete-left');
+            const right = document.getElementById('edge-delete-right');
+            if (left) {{
+                left.classList.remove('dragging-active');
+                left.classList.remove('active');
+            }}
+            if (right) {{
+                right.classList.remove('dragging-active');
+                right.classList.remove('active');
+            }}
+        }}
+
+        function updateEdgeHighlight(clientX) {{
+            const left = document.getElementById('edge-delete-left');
+            const right = document.getElementById('edge-delete-right');
+            const threshold = 75;
+            const w = window.innerWidth;
+
+            if (clientX <= threshold) {{
+                if (left) left.classList.add('active');
+                if (right) right.classList.remove('active');
+            }} else if (clientX >= w - threshold) {{
+                if (right) right.classList.add('active');
+                if (left) left.classList.remove('active');
+            }} else {{
+                if (left) left.classList.remove('active');
+                if (right) right.classList.remove('active');
+            }}
+        }}
+
+        function isPointInDeleteEdge(x) {{
+            const threshold = 75;
+            return (x <= threshold || x >= window.innerWidth - threshold);
+        }}
+
+        function deleteCardFromRoster(card) {{
+            if (!card) return;
+            const gid = card.getAttribute('data-game-id');
+            const title = card.getAttribute('data-game-title') || gid;
+
+            deletedGames.add(gid);
+            try {{
+                localStorage.setItem(STORAGE_DELETED_GAMES, JSON.stringify([...deletedGames]));
+            }} catch(e) {{}}
+
+            customAddedGames = customAddedGames.filter(g => g.id !== gid);
+            try {{
+                localStorage.setItem(STORAGE_CUSTOM_GAMES, JSON.stringify(customAddedGames));
+            }} catch(e) {{}}
+
+            card.style.transition = 'transform 0.25s, opacity 0.25s';
+            card.style.transform = 'scale(0)';
+            card.style.opacity = '0';
+            setTimeout(() => {{
+                card.remove();
+                updateCounts();
+                saveState();
+                showNotification('🗑️ «' + title + '» удалена из списка. Вы можете вернуть её через поиск.');
+            }}, 250);
+        }}
+
+        // --- MAGNETIC DROPZONE / POOL SNAPPING ---
+        function findClosestDropzone(x, y) {{
+            const candidates = [];
+
+            // 1. All tier dropzones
+            document.querySelectorAll('#tier-container .tier-row').forEach(row => {{
+                const dropzone = row.querySelector('.tier-dropzone');
+                if (dropzone) {{
+                    const rect = dropzone.getBoundingClientRect();
+                    let dy = 0;
+                    if (y < rect.top) dy = rect.top - y;
+                    else if (y > rect.bottom) dy = y - rect.bottom;
+
+                    let dx = 0;
+                    if (x < rect.left) dx = rect.left - x;
+                    else if (x > rect.right) dx = x - rect.right;
+
+                    const dist = Math.hypot(dx, dy);
+                    candidates.push({{ elem: dropzone, dist: dist, type: 'tier', rect: rect }});
+                }}
+            }});
+
+            // 2. Unranked pool
+            const unrankedPool = document.getElementById('unranked-pool');
+            const unrankedContainer = document.getElementById('unranked-container');
+            if (unrankedPool && unrankedContainer) {{
+                const rect = unrankedContainer.getBoundingClientRect();
+                let dy = 0;
+                if (y < rect.top) dy = rect.top - y;
+                else if (y > rect.bottom) dy = y - rect.bottom;
+
+                let dx = 0;
+                if (x < rect.left) dx = rect.left - x;
+                else if (x > rect.right) dx = x - rect.right;
+
+                const dist = Math.hypot(dx, dy);
+                candidates.push({{ elem: unrankedPool, dist: dist, type: 'pool', rect: rect }});
+            }}
+
+            if (candidates.length === 0) return null;
+            candidates.sort((a, b) => a.dist - b.dist);
+            return candidates[0];
+        }}
+
         function handleDragStart(e) {{
             draggedItem = this;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', this.id);
+            currentDragPoint = {{ x: e.clientX, y: e.clientY }};
+            lastKnownDragPoint = {{ x: e.clientX, y: e.clientY }};
+            showEdgeDeleteZones();
         }}
 
         function handleDragEnd(e) {{
-            this.classList.remove('dragging');
+            const card = this;
+            card.classList.remove('dragging');
             document.querySelectorAll('.tier-dropzone').forEach(zone => {{
                 zone.classList.remove('drag-over');
             }});
-            draggedItem = null;
+            hideEdgeDeleteZones();
             stopAutoScroll();
+
+            const dropPoint = currentDragPoint || lastKnownDragPoint || {{ x: e.clientX, y: e.clientY }};
+            currentDragPoint = null;
+            lastKnownDragPoint = null;
+
+            // 1. Dropped in left or right edge zone -> Delete from roster
+            if (dropPoint && isPointInDeleteEdge(dropPoint.x)) {{
+                deleteCardFromRoster(card);
+                draggedItem = null;
+                return;
+            }}
+
+            // 2. Magnetic snapping to closest tier or pool
+            if (dropPoint && dropPoint.y > 0) {{
+                const closest = findClosestDropzone(dropPoint.x, dropPoint.y);
+                if (closest) {{
+                    if (closest.type === 'pool') {{
+                        if (card.parentElement !== closest.elem) {{
+                            closest.elem.appendChild(card);
+                        }}
+                    }} else {{
+                        const afterElement = getDragAfterElement(closest.elem, dropPoint.x, dropPoint.y);
+                        if (afterElement == null) {{
+                            closest.elem.appendChild(card);
+                        }} else if (afterElement !== card) {{
+                            closest.elem.insertBefore(card, afterElement);
+                        }}
+                    }}
+                }}
+            }}
+
+            draggedItem = null;
             updateCounts();
             saveState();
         }}
@@ -2106,13 +2360,21 @@ html_content = f'''<!DOCTYPE html>
         function handleTouchStart(e) {{
             touchTarget = this;
             this.classList.add('dragging');
+            const touch = e.touches[0];
+            currentDragPoint = {{ x: touch.clientX, y: touch.clientY }};
+            lastKnownDragPoint = {{ x: touch.clientX, y: touch.clientY }};
+            showEdgeDeleteZones();
         }}
 
         function handleTouchMove(e) {{
             if (!touchTarget) return;
             e.preventDefault();
             const touch = e.touches[0];
+            currentDragPoint = {{ x: touch.clientX, y: touch.clientY }};
+            lastKnownDragPoint = {{ x: touch.clientX, y: touch.clientY }};
             handleAutoScroll(touch.clientY);
+            updateEdgeHighlight(touch.clientX);
+
             const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
             if (elemBelow) {{
                 const dropzone = elemBelow.closest('.tier-dropzone');
@@ -2120,7 +2382,7 @@ html_content = f'''<!DOCTYPE html>
                     const afterElement = getDragAfterElement(dropzone, touch.clientX, touch.clientY);
                     if (afterElement == null) {{
                         dropzone.appendChild(touchTarget);
-                    }} else {{
+                    }} else if (afterElement !== touchTarget) {{
                         dropzone.insertBefore(touchTarget, afterElement);
                     }}
                 }}
@@ -2129,9 +2391,40 @@ html_content = f'''<!DOCTYPE html>
 
         function handleTouchEnd(e) {{
             if (touchTarget) {{
-                touchTarget.classList.remove('dragging');
-                touchTarget = null;
+                const card = touchTarget;
+                card.classList.remove('dragging');
+                hideEdgeDeleteZones();
                 stopAutoScroll();
+
+                const dropPoint = currentDragPoint || lastKnownDragPoint;
+                currentDragPoint = null;
+                lastKnownDragPoint = null;
+
+                if (dropPoint && isPointInDeleteEdge(dropPoint.x)) {{
+                    deleteCardFromRoster(card);
+                    touchTarget = null;
+                    return;
+                }}
+
+                if (dropPoint && dropPoint.y > 0) {{
+                    const closest = findClosestDropzone(dropPoint.x, dropPoint.y);
+                    if (closest) {{
+                        if (closest.type === 'pool') {{
+                            if (card.parentElement !== closest.elem) {{
+                                closest.elem.appendChild(card);
+                            }}
+                        }} else {{
+                            const afterElement = getDragAfterElement(closest.elem, dropPoint.x, dropPoint.y);
+                            if (afterElement == null) {{
+                                closest.elem.appendChild(card);
+                            }} else if (afterElement !== card) {{
+                                closest.elem.insertBefore(card, afterElement);
+                            }}
+                        }}
+                    }}
+                }}
+
+                touchTarget = null;
                 updateCounts();
                 saveState();
             }}
@@ -2148,11 +2441,15 @@ html_content = f'''<!DOCTYPE html>
                     this.classList.add('drag-over');
 
                     if (draggedItem) {{
+                        currentDragPoint = {{ x: e.clientX, y: e.clientY }};
+                        lastKnownDragPoint = {{ x: e.clientX, y: e.clientY }};
                         handleAutoScroll(e.clientY);
+                        updateEdgeHighlight(e.clientX);
+
                         const afterElement = getDragAfterElement(this, e.clientX, e.clientY);
                         if (afterElement == null) {{
                             this.appendChild(draggedItem);
-                        }} else {{
+                        }} else if (afterElement !== draggedItem) {{
                             this.insertBefore(draggedItem, afterElement);
                         }}
                     }}
@@ -2242,6 +2539,7 @@ html_content = f'''<!DOCTYPE html>
                     localStorage.removeItem(STORAGE_KEY);
                     localStorage.removeItem(STORAGE_CUSTOM_GAMES);
                     localStorage.removeItem(STORAGE_SAVED_COVERS);
+                    localStorage.removeItem(STORAGE_DELETED_GAMES);
                 }} catch(e) {{}}
                 window.location.reload();
             }}
@@ -2445,12 +2743,20 @@ html_content = f'''<!DOCTYPE html>
         function setupGlobalEvents() {{
             document.addEventListener('dragover', function(e) {{
                 if (draggedItem) {{
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    currentDragPoint = {{ x: e.clientX, y: e.clientY }};
+                    lastKnownDragPoint = {{ x: e.clientX, y: e.clientY }};
                     handleAutoScroll(e.clientY);
+                    updateEdgeHighlight(e.clientX);
                 }}
             }}, {{ capture: true }});
 
             window.addEventListener('dragend', stopAutoScroll);
-            window.addEventListener('drop', stopAutoScroll);
+            window.addEventListener('drop', function(e) {{
+                e.preventDefault();
+                stopAutoScroll();
+            }});
             window.addEventListener('blur', stopAutoScroll);
             window.addEventListener('pointerup', stopAutoScroll);
 
