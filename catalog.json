@@ -1,5 +1,176 @@
 [
   {
+    "id": "ghost-of-yotei",
+    "title": "Ghost of Yōtei",
+    "appid": "",
+    "date": "2024-2026",
+    "source": "Official Release",
+    "platform": "PlayStation 5",
+    "hasLocal": true
+  },
+  {
+    "id": "gta-6",
+    "title": "Grand Theft Auto VI",
+    "appid": "",
+    "date": "2024-2026",
+    "source": "Official Release",
+    "platform": "PlayStation 5, Xbox Series X/S",
+    "hasLocal": true
+  },
+  {
+    "id": "monster-hunter-wilds",
+    "title": "Monster Hunter Wilds",
+    "appid": "2246340",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "kingdom-come-deliverance-2",
+    "title": "Kingdom Come: Deliverance II",
+    "appid": "1771300",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "stalker-2",
+    "title": "S.T.A.L.K.E.R. 2: Heart of Chornobyl",
+    "appid": "1643320",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "persona-3-reload",
+    "title": "Persona 3 Reload",
+    "appid": "2161700",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "tekken-8",
+    "title": "TEKKEN 8",
+    "appid": "1778820",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "dragons-dogma-2",
+    "title": "Dragon's Dogma 2",
+    "appid": "2054970",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "dragon-ball-sparking-zero",
+    "title": "DRAGON BALL: Sparking! ZERO",
+    "appid": "1790600",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "silent-hill-2",
+    "title": "SILENT HILL 2",
+    "appid": "2124490",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5",
+    "hasLocal": true
+  },
+  {
+    "id": "frostpunk-2",
+    "title": "Frostpunk 2",
+    "appid": "1601580",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "enshrouded",
+    "title": "Enshrouded",
+    "appid": "1203630",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC",
+    "hasLocal": true
+  },
+  {
+    "id": "balatro",
+    "title": "Balatro",
+    "appid": "2379780",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, Switch, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "hades-2",
+    "title": "Hades II",
+    "appid": "1145350",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC",
+    "hasLocal": true
+  },
+  {
+    "id": "manor-lords",
+    "title": "Manor Lords",
+    "appid": "1363080",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC",
+    "hasLocal": true
+  },
+  {
+    "id": "satisfactory",
+    "title": "Satisfactory",
+    "appid": "526870",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC",
+    "hasLocal": true
+  },
+  {
+    "id": "space-marine-2",
+    "title": "Warhammer 40,000: Space Marine 2",
+    "appid": "2183900",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5, XSX",
+    "hasLocal": true
+  },
+  {
+    "id": "helldivers-2",
+    "title": "HELLDIVERS 2",
+    "appid": "553850",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5",
+    "hasLocal": true
+  },
+  {
+    "id": "black-myth-wukong",
+    "title": "Black Myth: Wukong",
+    "appid": "2358720",
+    "date": "2024-2026",
+    "source": "SteamDB / Official",
+    "platform": "PC, PS5",
+    "hasLocal": true
+  },
+  {
     "id": "cultivation-magic-world",
     "title": "Cultivation Magic World",
     "appid": "3642180",
