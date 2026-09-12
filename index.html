@@ -587,9 +587,9 @@
         }
         .btn-catalog-add:disabled {
             background: #333;
-            color: #777;
-            border-color: #444;
-            cursor: not-allowed;
+            color: #aaa;
+            border-color: #555;
+            cursor: wait;
         }
 
         .badge-in-list {
@@ -920,7 +920,13 @@
 
         let customCoversCache = {};
         try {
-            customCoversCache = JSON.parse(localStorage.getItem(STORAGE_SAVED_COVERS) || '{}');
+            const rawCache = JSON.parse(localStorage.getItem(STORAGE_SAVED_COVERS) || '{}');
+            // Clean out any SVG placeholders from cache so real covers can be downloaded
+            for (const k in rawCache) {
+                if (rawCache[k] && !rawCache[k].startsWith('data:image/svg+xml')) {
+                    customCoversCache[k] = rawCache[k];
+                }
+            }
         } catch(e) {}
 
         let customAddedGames = [];
@@ -999,43 +1005,82 @@
             return !!document.querySelector('[data-game-id="' + gameId + '"]');
         }
 
-        // --- DYNAMIC COVER DOWNLOAD LOGIC ---
-        function downloadImageAsDataUrl(url) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                img.onload = () => {
-                    try {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.naturalWidth || 600;
-                        canvas.height = img.naturalHeight || 900;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                        resolve(dataUrl);
-                    } catch (e) {
-                        resolve(url);
-                    }
-                };
-                img.onerror = (e) => reject(e);
-                img.src = url;
-            });
+        function isRealCover(src) {
+            if (!src) return false;
+            if (src.startsWith('data:image/svg+xml')) return false;
+            if (src.startsWith('data:image/jpeg') || src.startsWith('data:image/png') || src.startsWith('data:image/webp')) return true;
+            if (src.startsWith('images/') || src.startsWith('http://') || src.startsWith('https://')) return true;
+            return false;
         }
 
-        async function fetchWikipediaCover(title) {
-            const cleanTitle = title.replace(/['’"™®:!?,.()&]/g, '').trim();
-            const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(cleanTitle)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
+        // --- RELIABLE POSTER DOWNLOAD VIA CORS FETCH & FILEREADER ---
+        async function fetchImageAsBase64(url) {
             try {
-                const resp = await fetch(apiUrl);
-                const data = await resp.json();
-                const pages = data.query?.pages;
-                if (pages) {
-                    for (const pid in pages) {
-                        const thumb = pages[pid].thumbnail?.source;
-                        if (thumb) return thumb;
-                    }
+                const resp = await fetch(url, { mode: 'cors' });
+                if (!resp.ok) return null;
+                const blob = await resp.blob();
+                if (blob.size < 1000) return null; // Reject tiny error images
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        if (reader.result && typeof reader.result === 'string' && reader.result.startsWith('data:image')) {
+                            resolve(reader.result);
+                        } else {
+                            resolve(null);
+                        }
+                    };
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (err) {
+                return null;
+            }
+        }
+
+        async function downloadGamePoster(game) {
+            // 1. Check if game has Steam appid -> try Steam CDN endpoints in order
+            if (game.appid) {
+                const steamEndpoints = [
+                    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/library_600x900.jpg`,
+                    `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/library_600x900.jpg`,
+                    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/header.jpg`,
+                    `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`,
+                    `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/capsule_616x353.jpg`
+                ];
+
+                for (const u of steamEndpoints) {
+                    const dataUrl = await fetchImageAsBase64(u);
+                    if (dataUrl) return dataUrl;
                 }
-            } catch(e) {}
+            }
+
+            // 2. Wikipedia Search API
+            const cleanTitle = game.title.replace(/['’"™®:!?,.()&]/g, '').trim();
+            const searchQueries = [
+                cleanTitle + ' video game',
+                cleanTitle
+            ];
+
+            for (const q of searchQueries) {
+                try {
+                    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&prop=pageimages&pithumbsize=600&format=json&origin=*`;
+                    const resp = await fetch(wikiUrl);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        const pages = data.query?.pages;
+                        if (pages) {
+                            for (const pid in pages) {
+                                const thumb = pages[pid].thumbnail?.source;
+                                if (thumb) {
+                                    const dataUrl = await fetchImageAsBase64(thumb);
+                                    if (dataUrl) return dataUrl;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+            }
+
             return null;
         }
 
@@ -1176,6 +1221,7 @@
             searchDropdown.style.display = 'block';
         }
 
+        // --- ADD GAME: DOWNLOAD POSTER ONLY ON CLICK ---
         async function addGameFromCatalog(gameId) {
             const game = CATALOG_DATA.find(g => g.id === gameId);
             if (!game) return;
@@ -1188,48 +1234,26 @@
             const btn = document.getElementById('btn-add-' + game.id);
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = '⏳ Загрузка...';
+                btn.textContent = '⏳ Скачивание постера...';
             }
 
-            // 1. Check local poster or download
-            let posterSrc = GAME_CUSTOM_COVERS[game.id] || customCoversCache[game.id];
+            // Check if already downloaded
+            let posterSrc = GAME_CUSTOM_COVERS[game.id] || (customCoversCache[game.id] && isRealCover(customCoversCache[game.id]) ? customCoversCache[game.id] : null);
 
+            // Download poster ONLY when user clicks Add
             if (!posterSrc) {
-                // Download from Steam CDN if appid exists
-                if (game.appid) {
-                    const steamUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.appid}/library_600x900.jpg`;
+                posterSrc = await downloadGamePoster(game);
+                if (posterSrc) {
+                    customCoversCache[game.id] = posterSrc;
                     try {
-                        posterSrc = await downloadImageAsDataUrl(steamUrl);
-                    } catch (e) {
-                        console.warn('Steam cover fetch failed, trying wiki/svg:', e);
-                    }
-                }
-
-                // Try wiki if still no poster
-                if (!posterSrc) {
-                    try {
-                        const wikiThumb = await fetchWikipediaCover(game.title);
-                        if (wikiThumb) {
-                            posterSrc = await downloadImageAsDataUrl(wikiThumb);
-                        }
-                    } catch (e) {}
-                }
-
-                // Fallback to high quality generated SVG
-                if (!posterSrc) {
-                    posterSrc = makeDynamicCoverSvg(game.title, game.source, game.date);
-                }
-
-                // Save to local cache
-                customCoversCache[game.id] = posterSrc;
-                try {
-                    localStorage.setItem(STORAGE_SAVED_COVERS, JSON.stringify(customCoversCache));
-                } catch(e) {
-                    console.warn('Cover quota warning:', e);
+                        localStorage.setItem(STORAGE_SAVED_COVERS, JSON.stringify(customCoversCache));
+                    } catch(e) {}
                 }
             }
 
-            // 2. Build game object
+            const finalPoster = posterSrc || makeDynamicCoverSvg(game.title, game.source, game.date);
+
+            // Build game object
             const isHit = game.date && game.date <= '2026-09-12';
             const newGameObject = {
                 id: game.id,
@@ -1240,7 +1264,7 @@
                 sales: game.date ? (isHit ? '1.0M+' : game.date) : '2026',
                 status: game.date ? `Релиз ${game.date} (${game.source})` : game.platform,
                 platforms: game.platform || 'PC',
-                image: posterSrc
+                image: finalPoster
             };
 
             if (!GAMES_DATA.some(g => g.id === newGameObject.id)) {
@@ -1254,7 +1278,7 @@
                 } catch(e) {}
             }
 
-            // 3. Create card and append to pool
+            // Create card and append to pool
             const pool = document.getElementById('unranked-pool');
             const card = createCardElement(newGameObject);
             card.classList.add('card-new-highlight');
@@ -1263,13 +1287,47 @@
             updateCounts();
             saveState();
 
-            // 4. Update button in dropdown
             if (btn) {
                 btn.outerHTML = '<span class="badge-in-list">✓ Добавлено</span>';
             }
 
-            // Highlight card in pool
             card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // --- ON PAGE REFRESH: CHECK ALL GAMES UNDER TIERS AND IN TIERS ---
+        async function checkAndDownloadMissingPosters() {
+            const cards = document.querySelectorAll('.character');
+            for (const card of cards) {
+                const gid = card.getAttribute('data-game-id');
+                if (!gid) continue;
+
+                const hasEmbedded = !!GAME_CUSTOM_COVERS[gid];
+                const cached = customCoversCache[gid];
+                const hasRealCached = isRealCover(cached);
+
+                // If poster is NOT downloaded yet (currently using SVG or missing)
+                if (!hasEmbedded && !hasRealCached) {
+                    const gameInfo = CATALOG_DATA.find(g => g.id === gid) || GAMES_DATA.find(g => g.id === gid);
+                    if (!gameInfo) continue;
+
+                    console.log('Проверка при обновлении: скачиваем недостающий постер для ' + gameInfo.title);
+                    try {
+                        const downloaded = await downloadGamePoster(gameInfo);
+                        if (downloaded) {
+                            customCoversCache[gid] = downloaded;
+                            try {
+                                localStorage.setItem(STORAGE_SAVED_COVERS, JSON.stringify(customCoversCache));
+                            } catch(e) {}
+                            const img = card.querySelector('img');
+                            if (img) {
+                                img.src = downloaded;
+                            }
+                            const gObj = GAMES_DATA.find(g => g.id === gid);
+                            if (gObj) gObj.image = downloaded;
+                        }
+                    } catch (e) {}
+                }
+            }
         }
 
         function createCardElement(game) {
@@ -1283,7 +1341,7 @@
             card.setAttribute('data-game-subtype', game.subtype || 'original');
 
             const imgSrc = GAME_CUSTOM_COVERS[game.id] || customCoversCache[game.id] || game.image || ('images/' + game.id + '.jpg');
-            const fallbackSrc = game.image || makeDynamicCoverSvg(game.title, '2026', '');
+            const fallbackSrc = makeDynamicCoverSvg(game.title, game.source || '2026', '');
 
             card.innerHTML = 
                 '<img src="' + imgSrc + '" data-id="' + game.id + '" data-fallback="' + fallbackSrc + '" onerror="this.onerror=null;this.src=this.dataset.fallback;" alt="' + escapeHtml(game.title) + '" id="img-' + game.id + '">' +
@@ -1666,6 +1724,7 @@
                 try {
                     localStorage.removeItem(STORAGE_KEY);
                     localStorage.removeItem(STORAGE_CUSTOM_GAMES);
+                    localStorage.removeItem(STORAGE_SAVED_COVERS);
                 } catch(e) {}
                 window.location.reload();
             }
@@ -1856,11 +1915,14 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             initCards();
             loadState();
             setupDropzones();
             setupGlobalEvents();
+            
+            // On page refresh / load: check all games on the board and download missing posters
+            await checkAndDownloadMissingPosters();
         });
     </script>
 </body>
