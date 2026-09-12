@@ -340,6 +340,20 @@ for fname in os.listdir(images_dir):
             b64 = base64.b64encode(data).decode("utf-8")
             custom_covers[gid] = f"data:{mime};base64,{b64}"
 
+# Map catalog alias IDs so they resolve to the exact poster instantly
+aliases = {
+    "gta-vi": "gta-6",
+    "cod-modern-warfare-4-ps5": "cod-modern-warfare-4",
+    "marvels-wolverine": "marvels-wolverine",
+    "marvel-tokon-ps5": "marvels-wolverine",
+    "death-stranding-2-ps5": "death-stranding-2",
+    "ghost-of-yotei-ps5": "ghost-of-yotei",
+    "phantom-blade-zero-ps5": "phantom-blade-zero"
+}
+for alias, orig in aliases.items():
+    if orig in custom_covers and alias not in custom_covers:
+        custom_covers[alias] = custom_covers[orig]
+
 print(f"Loaded {len(custom_covers)} pre-cached base64 covers from images/ directory!")
 
 def make_svg(game):
@@ -1385,9 +1399,15 @@ html_content = f'''<!DOCTYPE html>
     <canvas id="export-canvas"></canvas>
 
     <script>
-        const STORAGE_KEY = 'tierlist_2026_state_v3';
+        const STORAGE_KEY = 'tierlist_2026_state_v4';
         const STORAGE_CUSTOM_GAMES = 'tierlist_2026_custom_games';
-        const STORAGE_SAVED_COVERS = 'tierlist_2026_saved_covers';
+        const STORAGE_SAVED_COVERS = 'tierlist_2026_saved_covers_v4';
+
+        // Wipe old wrong posters cache on next launch
+        try {{
+            localStorage.removeItem('tierlist_2026_saved_covers');
+            localStorage.removeItem('tierlist_2026_saved_covers_v3');
+        }} catch(e) {{}}
 
         const BASE_GAMES = {games_json};
         const GAME_CUSTOM_COVERS = {covers_json};
@@ -1513,7 +1533,12 @@ html_content = f'''<!DOCTYPE html>
         }}
 
         async function downloadGamePoster(game) {{
-            // 1. Check if game has Steam appid -> try Steam CDN endpoints in order
+            // 0. Check pre-cached custom covers first
+            if (GAME_CUSTOM_COVERS[game.id]) {{
+                return GAME_CUSTOM_COVERS[game.id];
+            }}
+
+            // 1. Check if game has Steam appid -> try Steam CDN official library posters in order
             if (game.appid) {{
                 const steamEndpoints = [
                     `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${{game.appid}}/library_600x900.jpg`,
@@ -1529,31 +1554,48 @@ html_content = f'''<!DOCTYPE html>
                 }}
             }}
 
-            // 2. Wikipedia Search API
-            const cleanTitle = game.title.replace(/['’"™®:!?,.()&]/g, '').trim();
-            const searchQueries = [
-                cleanTitle + ' video game',
-                cleanTitle
-            ];
+            // 2. Search query MUST explicitly be: "[Game_Name] game poster"
+            const searchQuery = `${{game.title}} game poster`;
+            try {{
+                const wikiSearchUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${{encodeURIComponent(searchQuery)}}&prop=images&format=json&origin=*`;
+                const resp = await fetch(wikiSearchUrl);
+                if (resp.ok) {{
+                    const data = await resp.json();
+                    const pages = data.query?.pages;
+                    if (pages) {{
+                        const sortedPages = Object.values(pages).sort((a, b) => (a.index || 999) - (b.index || 999));
+                        for (const p of sortedPages) {{
+                            const imgs = p.images || [];
+                            // Find actual cover art or poster (exclude svg icons and non-cover images)
+                            const coverFiles = imgs.filter(img => {{
+                                const t = (img.title || '').toLowerCase();
+                                if (t.endsWith('.svg')) return false;
+                                return t.includes('cover') || t.includes('poster') || t.includes('boxart') || t.includes('artwork');
+                            }});
 
-            for (const q of searchQueries) {{
-                try {{
-                    const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${{encodeURIComponent(q)}}&prop=pageimages&pithumbsize=600&format=json&origin=*`;
-                    const resp = await fetch(wikiUrl);
-                    if (resp.ok) {{
-                        const data = await resp.json();
-                        const pages = data.query?.pages;
-                        if (pages) {{
-                            for (const pid in pages) {{
-                                const thumb = pages[pid].thumbnail?.source;
-                                if (thumb) {{
-                                    const dataUrl = await fetchImageAsBase64(thumb);
-                                    if (dataUrl) return dataUrl;
+                            if (coverFiles.length > 0) {{
+                                const fileTitle = coverFiles[0].title;
+                                const infoUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${{encodeURIComponent(fileTitle)}}&prop=imageinfo&iiprop=url&format=json&origin=*`;
+                                const infoResp = await fetch(infoUrl);
+                                if (infoResp.ok) {{
+                                    const infoData = await infoResp.json();
+                                    const ipages = infoData.query?.pages;
+                                    if (ipages) {{
+                                        for (const ip in ipages) {{
+                                            const ii = ipages[ip].imageinfo;
+                                            if (ii && ii[0] && ii[0].url) {{
+                                                const dataUrl = await fetchImageAsBase64(ii[0].url);
+                                                if (dataUrl) return dataUrl;
+                                            }}
+                                        }}
+                                    }}
                                 }}
                             }}
                         }}
                     }}
-                }} catch (e) {{}}
+                }}
+            }} catch (e) {{
+                console.warn('Poster search error for query:', searchQuery, e);
             }}
 
             return null;
