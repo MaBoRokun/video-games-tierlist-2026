@@ -1,17 +1,20 @@
 import os
-import base64
 import json
+import base64
 import html
 import urllib.parse
+import sys
 
-# 50 games meeting:
-# 1. 1M+ copies sold
-# 2. Metacritic 70+
-# 3. DLC, big Expansion or Enhanced/Enchanted version included
-# 4. Most anticipated releases of late 2026
+sys.stdout.reconfigure(encoding='utf-8')
 
-games = [
-    # --- ALREADY RELEASED HITS (70+ METACRITIC & 1M+ SALES, ORIGINAL RELEASES) ---
+# 1. Load catalog
+catalog_file = 'C:/Users/zdog0/.gemini/antigravity/scratch/tierlist-2026/catalog.json'
+with open(catalog_file, 'r', encoding='utf-8') as f:
+    catalog_data = json.load(f)
+
+# 2. 28 Base Games strictly meeting criteria
+base_games = [
+    # --- ALREADY RELEASED HITS (1M+ SALES, 70+ METACRITIC, 80%+ STEAM SCORE) ---
     {
         "id": "forza-horizon-6",
         "title": "Forza Horizon 6",
@@ -19,7 +22,7 @@ games = [
         "subtype": "original",
         "meta": "91",
         "sales": "6.4M+",
-        "status": "Вышла 19 мая 2026",
+        "status": "Вышла 19 мая 2026 (Steam: 84%)",
         "platforms": "PC, Xbox Series X/S",
         "lines": ["FORZA", "HORIZON 6"]
     },
@@ -30,8 +33,8 @@ games = [
         "subtype": "original",
         "meta": "89",
         "sales": "6.0M+",
-        "status": "Вышла 27 фев 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "status": "Вышла 27 фев 2026 (Steam: 97%)",
+        "platforms": "PC, PS5, XSX",
         "lines": ["RESIDENT", "EVIL", "REQUIEM"]
     },
     {
@@ -41,7 +44,7 @@ games = [
         "subtype": "original",
         "meta": "87",
         "sales": "4.0M+",
-        "status": "Вышла 26 мая 2026",
+        "status": "Вышла 26 мая 2026 (Steam: 85%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["007", "FIRST LIGHT"]
     },
@@ -52,31 +55,9 @@ games = [
         "subtype": "original",
         "meta": "85",
         "sales": "2.5M+",
-        "status": "Вышла 17 апр 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "status": "Вышла 17 апр 2026 (Steam: 80%)",
+        "platforms": "PC, PS5, XSX",
         "lines": ["PRAGMATA"]
-    },
-    {
-        "id": "pokemon-pokopia",
-        "title": "Pokémon Pokopia",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "89",
-        "sales": "2.2M+",
-        "status": "Вышла 5 мар 2026",
-        "platforms": "Nintendo Switch 2",
-        "lines": ["POKÉMON", "POKOPIA"]
-    },
-    {
-        "id": "god-of-war-sons-of-sparta",
-        "title": "God of War: Sons of Sparta",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "84",
-        "sales": "2.0M+",
-        "status": "Вышла 12 фев 2026",
-        "platforms": "PlayStation 5",
-        "lines": ["GOD OF WAR", "SONS OF", "SPARTA"]
     },
     {
         "id": "college-football-27",
@@ -85,7 +66,7 @@ games = [
         "subtype": "original",
         "meta": "84",
         "sales": "2.5M+",
-        "status": "Вышла 9 июл 2026",
+        "status": "Вышла 9 июл 2026 (Steam: 83%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["EA SPORTS", "COLLEGE", "FOOTBALL 27"]
     },
@@ -96,7 +77,7 @@ games = [
         "subtype": "original",
         "meta": "84",
         "sales": "1.2M+",
-        "status": "Вышла 22 мая 2026",
+        "status": "Вышла 22 мая 2026 (Steam: 96%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["LEGO BATMAN", "LEGACY OF", "DARK KNIGHT"]
     },
@@ -107,8 +88,8 @@ games = [
         "subtype": "original",
         "meta": "83",
         "sales": "1.0M+",
-        "status": "Вышла 4 авг 2026",
-        "platforms": "PC, PS5, Switch 2, Mac",
+        "status": "Вышла 4 авг 2026 (Steam: 96%)",
+        "platforms": "PC, PS5, Mac",
         "lines": ["BIG WALK"]
     },
     {
@@ -118,20 +99,9 @@ games = [
         "subtype": "original",
         "meta": "83",
         "sales": "1.0M+",
-        "status": "Вышла 3 сен 2026",
+        "status": "Вышла 3 сен 2026 (Steam: 86%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["THE BLOOD OF", "DAWNWALKER"]
-    },
-    {
-        "id": "marvel-tokon",
-        "title": "MARVEL Tōkon: Fighting Souls",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "82",
-        "sales": "1.0M+",
-        "status": "Вышла 6 авг 2026",
-        "platforms": "PC, PlayStation 5",
-        "lines": ["MARVEL TŌKON", "FIGHTING SOULS"]
     },
     {
         "id": "resonance-plague-tale",
@@ -140,31 +110,9 @@ games = [
         "subtype": "original",
         "meta": "82",
         "sales": "1.0M+",
-        "status": "Вышла 27 авг 2026",
+        "status": "Вышла 27 авг 2026 (Steam: 92%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["RESONANCE", "A PLAGUE TALE", "LEGACY"]
-    },
-    {
-        "id": "halo-campaign-evolved",
-        "title": "Halo: Campaign Evolved",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "81",
-        "sales": "1.2M+",
-        "status": "Вышла 28 июл 2026",
-        "platforms": "PC, XSX, PS5",
-        "lines": ["HALO", "CAMPAIGN", "EVOLVED"]
-    },
-    {
-        "id": "splatoon-raiders",
-        "title": "Splatoon Raiders",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "81",
-        "sales": "1.0M+",
-        "status": "Вышла 23 июл 2026",
-        "platforms": "Nintendo Switch 2",
-        "lines": ["SPLATOON", "RAIDERS"]
     },
     {
         "id": "nioh-3",
@@ -173,7 +121,7 @@ games = [
         "subtype": "original",
         "meta": "86",
         "sales": "1.0M+",
-        "status": "Вышла 6 фев 2026",
+        "status": "Вышла 6 фев 2026 (Steam: 80%)",
         "platforms": "PC, PlayStation 5",
         "lines": ["NIOH 3"]
     },
@@ -184,8 +132,8 @@ games = [
         "subtype": "original",
         "meta": "89",
         "sales": "1.0M+",
-        "status": "Вышла 10 фев 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "status": "Вышла 10 фев 2026 (Steam: 91%)",
+        "platforms": "PC, PS5, XSX",
         "lines": ["MEWGENICS"]
     },
     {
@@ -195,8 +143,8 @@ games = [
         "subtype": "original",
         "meta": "85",
         "sales": "1.0M+",
-        "status": "Вышла 4 сен 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "status": "Вышла 4 сен 2026 (Steam: 94%)",
+        "platforms": "PC, PS5, XSX",
         "lines": ["ONIMUSHA", "WAY OF THE", "SWORD"]
     },
     {
@@ -206,8 +154,8 @@ games = [
         "subtype": "original",
         "meta": "80",
         "sales": "1.0M+",
-        "status": "Вышла 13 фев 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "status": "Вышла 13 фев 2026 (Steam: 100%)",
+        "platforms": "PC, PS5, XSX",
         "lines": ["REANIMAL"]
     },
     {
@@ -217,7 +165,7 @@ games = [
         "subtype": "original",
         "meta": "78",
         "sales": "1.1M+",
-        "status": "Вышла 27 авг 2026",
+        "status": "Вышла 27 авг 2026 (Steam: 82%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["STAR WARS", "ZERO COMPANY"]
     },
@@ -228,42 +176,9 @@ games = [
         "subtype": "original",
         "meta": "76",
         "sales": "1.2M+",
-        "status": "Вышла 5 июн 2026",
+        "status": "Вышла 5 июн 2026 (Steam: 85%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["GOTHIC 1", "REMAKE"]
-    },
-    {
-        "id": "beast-of-reincarnation",
-        "title": "Beast of Reincarnation",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "75",
-        "sales": "1.0M+",
-        "status": "Вышла 4 авг 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["BEAST OF", "REINCARNATION"]
-    },
-    {
-        "id": "nba-2k27",
-        "title": "NBA 2K27",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "73",
-        "sales": "3.2M+",
-        "status": "Вышла 4 сен 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["NBA 2K27"]
-    },
-    {
-        "id": "high-on-life-2",
-        "title": "High On Life 2",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "73",
-        "sales": "1.0M+",
-        "status": "Вышла 13 фев 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["HIGH ON LIFE 2"]
     },
     {
         "id": "code-vein-2",
@@ -272,124 +187,23 @@ games = [
         "subtype": "original",
         "meta": "72",
         "sales": "1.2M+",
-        "status": "Вышла 29 янв 2026",
+        "status": "Вышла 29 янв 2026 (Steam: 87%)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["CODE VEIN II"]
-    },
-    {
-        "id": "madden-nfl-27",
-        "title": "EA Sports Madden NFL 27",
-        "type": "hit",
-        "subtype": "original",
-        "meta": "71",
-        "sales": "2.8M+",
-        "status": "Вышла 13 авг 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["EA SPORTS", "MADDEN NFL 27"]
-    },
-
-    # --- DLC, BIG EXPANSIONS & ENHANCED / ENCHANTED EDITIONS (70+ METACRITIC & 1M+ SALES) ---
-    {
-        "id": "elden-ring-tarnished-edition",
-        "title": "Elden Ring: Tarnished Edition",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "94",
-        "sales": "1.5M+",
-        "status": "Вышла 28 авг 2026",
-        "platforms": "Switch 2, PC, PS5, XSX",
-        "lines": ["ELDEN RING", "TARNISHED", "EDITION"]
     },
     {
         "id": "death-stranding-2",
         "title": "Death Stranding 2: On The Beach",
         "type": "hit",
-        "subtype": "expansion",
+        "subtype": "original",
         "meta": "89",
         "sales": "2.0M+",
-        "status": "Вышла 19 мар 2026 (PC)",
+        "status": "Вышла 19 мар 2026 (Steam: 95%)",
         "platforms": "PC, PlayStation 5",
         "lines": ["DEATH", "STRANDING 2"]
     },
-    {
-        "id": "diablo-4-lord-of-hatred",
-        "title": "Diablo IV: Lord of Hatred",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "83",
-        "sales": "2.0M+",
-        "status": "Вышла 28 апр 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["DIABLO IV", "LORD OF", "HATRED"]
-    },
-    {
-        "id": "wow-midnight",
-        "title": "World of Warcraft: Midnight",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "82",
-        "sales": "3.0M+",
-        "status": "Вышла 2 мар 2026",
-        "platforms": "PC, Mac",
-        "lines": ["WORLD OF", "WARCRAFT", "MIDNIGHT"]
-    },
-    {
-        "id": "dragon-quest-7-reimagined",
-        "title": "Dragon Quest VII Reimagined",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "82",
-        "sales": "1.1M+",
-        "status": "Вышла 5 фев 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["DRAGON QUEST VII", "REIMAGINED"]
-    },
-    {
-        "id": "yakuza-kiwami-3",
-        "title": "Yakuza Kiwami 3 & Dark Ties",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "79",
-        "sales": "1.3M+",
-        "status": "Вышла 11 фев 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["YAKUZA KIWAMI 3", "& DARK TIES"]
-    },
-    {
-        "id": "ac-black-flag-resynced",
-        "title": "Assassin's Creed Black Flag Resynced",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "79",
-        "sales": "1.8M+",
-        "status": "Вышла 9 июл 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["AC BLACK FLAG", "RESYNCED"]
-    },
-    {
-        "id": "mgs-master-collection-vol-2",
-        "title": "Metal Gear Solid: Master Collection Vol. 2",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "78",
-        "sales": "1.2M+",
-        "status": "Вышла 27 авг 2026",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["METAL GEAR SOLID", "COLLECTION", "VOL. 2"]
-    },
-    {
-        "id": "crimson-desert-enhanced",
-        "title": "Crimson Desert Enhanced",
-        "type": "hit",
-        "subtype": "expansion",
-        "meta": "77",
-        "sales": "2.5M+",
-        "status": "Вышла 19 мар 2026",
-        "platforms": "PC, PS5, Xbox Series X/S",
-        "lines": ["CRIMSON DESERT", "ENHANCED"]
-    },
 
-    # --- MOST ANTICIPATED & UPCOMING BLOCKBUSTERS OF LATE 2026 ---
+    # --- MOST ANTICIPATED BLOCKBUSTERS OF LATE 2026 (PS5 LIST & JSON) ---
     {
         "id": "gta-vi",
         "title": "Grand Theft Auto VI",
@@ -413,6 +227,17 @@ games = [
         "lines": ["MARVEL'S", "WOLVERINE"]
     },
     {
+        "id": "gears-of-war-e-day",
+        "title": "Gears of War: E-Day",
+        "type": "anticipated",
+        "subtype": "original",
+        "meta": "HYPE 96",
+        "sales": "6 Октября 2026",
+        "status": "Релиз 6 октября 2026 (Xbox Studios)",
+        "platforms": "PC, Xbox Series X/S",
+        "lines": ["GEARS OF WAR", "E-DAY"]
+    },
+    {
         "id": "control-resonant",
         "title": "Control Resonant",
         "type": "anticipated",
@@ -420,7 +245,7 @@ games = [
         "meta": "HYPE 94",
         "sales": "24 Сентября 2026",
         "status": "Релиз 24 сентября 2026 (Remedy)",
-        "platforms": "PC, PS5, XSX, Mac",
+        "platforms": "PC, PS5, XSX",
         "lines": ["CONTROL", "RESONANT"]
     },
     {
@@ -435,28 +260,6 @@ games = [
         "lines": ["SILENT HILL", "TOWNFALL"]
     },
     {
-        "id": "ea-sports-fc-27",
-        "title": "EA Sports FC 27",
-        "type": "anticipated",
-        "subtype": "original",
-        "meta": "HYPE 92",
-        "sales": "24 Сентября 2026",
-        "status": "Релиз 24 сентября 2026 (EA)",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["EA SPORTS", "FC 27"]
-    },
-    {
-        "id": "rayman-legends-retold",
-        "title": "Rayman Legends Retold",
-        "type": "anticipated",
-        "subtype": "expansion",
-        "meta": "HYPE 88",
-        "sales": "1 Октября 2026",
-        "status": "Релиз 1 октября 2026 (Ubisoft)",
-        "platforms": "PC, PS5, XSX, Switch 2",
-        "lines": ["RAYMAN", "LEGENDS RETOLD"]
-    },
-    {
         "id": "ace-combat-8",
         "title": "Ace Combat 8: Wings of Theve",
         "type": "anticipated",
@@ -466,17 +269,6 @@ games = [
         "status": "Релиз 2 октября 2026 (Bandai Namco)",
         "platforms": "PC, PS5, Xbox Series X/S",
         "lines": ["ACE COMBAT 8", "WINGS OF THEVE"]
-    },
-    {
-        "id": "gears-of-war-e-day",
-        "title": "Gears of War: E-Day",
-        "type": "anticipated",
-        "subtype": "original",
-        "meta": "HYPE 96",
-        "sales": "6 Октября 2026",
-        "status": "Релиз 6 октября 2026 (Xbox Studios)",
-        "platforms": "PC, Xbox Series X/S",
-        "lines": ["GEARS OF WAR", "E-DAY"]
     },
     {
         "id": "star-wars-galactic-racer",
@@ -497,7 +289,7 @@ games = [
         "meta": "HYPE 92",
         "sales": "15 Октября 2026",
         "status": "Релиз 15 октября 2026 (Konami)",
-        "platforms": "PC, PS5, XSX, Switch",
+        "platforms": "PC, PS5, XSX",
         "lines": ["CASTLEVANIA", "BELMONT'S", "CURSE"]
     },
     {
@@ -508,7 +300,7 @@ games = [
         "meta": "HYPE 95",
         "sales": "23 Октября 2026",
         "status": "Релиз 23 октября 2026 (Activision)",
-        "platforms": "PC, PS5, XSX, Switch 2",
+        "platforms": "PC, PS5, XSX",
         "lines": ["CALL OF DUTY", "MODERN", "WARFARE 4"]
     },
     {
@@ -523,17 +315,6 @@ games = [
         "lines": ["PHANTOM", "BLADE ZERO"]
     },
     {
-        "id": "zelda-ocarina-of-time",
-        "title": "The Legend of Zelda: Ocarina of Time (2026)",
-        "type": "anticipated",
-        "subtype": "expansion",
-        "meta": "HYPE 99",
-        "sales": "5 Ноября 2026",
-        "status": "Релиз 5 ноября 2026 (Nintendo)",
-        "platforms": "Nintendo Switch 2",
-        "lines": ["ZELDA", "OCARINA OF", "TIME 2026"]
-    },
-    {
         "id": "warhammer-dawn-of-war-4",
         "title": "Warhammer 40,000: Dawn of War IV",
         "type": "anticipated",
@@ -543,52 +324,26 @@ games = [
         "status": "Релиз 3 декабря 2026 (Sega / Relic)",
         "platforms": "PC",
         "lines": ["WARHAMMER", "DAWN OF", "WAR IV"]
-    },
-    {
-        "id": "monster-hunter-wilds-switch2",
-        "title": "Monster Hunter Wilds (Switch 2)",
-        "type": "anticipated",
-        "subtype": "expansion",
-        "meta": "HYPE 95",
-        "sales": "4 Декабря 2026",
-        "status": "Релиз 4 декабря 2026 (Capcom)",
-        "platforms": "Nintendo Switch 2",
-        "lines": ["MONSTER HUNTER", "WILDS (SWITCH 2)"]
-    },
-    {
-        "id": "professor-layton-steam",
-        "title": "Professor Layton & the New World of Steam",
-        "type": "anticipated",
-        "subtype": "original",
-        "meta": "HYPE 90",
-        "sales": "10 Декабря 2026",
-        "status": "Релиз 10 декабря 2026 (Level-5)",
-        "platforms": "Nintendo Switch 2, Switch",
-        "lines": ["PROFESSOR", "LAYTON", "STEAM"]
     }
 ]
 
 images_dir = "C:/Users/zdog0/.gemini/antigravity/scratch/tierlist-2026/images"
 custom_covers = {}
 
-matched_count = 0
-for g in games:
-    gid = g["id"]
-    for ext in [".jpg", ".png", ".webp", ".jpeg"]:
-        img_path = os.path.join(images_dir, f"{gid}{ext}")
-        if os.path.exists(img_path):
-            with open(img_path, "rb") as f:
-                data = f.read()
-                mime = "image/png" if data[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
-                b64 = base64.b64encode(data).decode("utf-8")
-                custom_covers[gid] = f"data:{mime};base64,{b64}"
-                matched_count += 1
-                break
+for fname in os.listdir(images_dir):
+    if fname.endswith(('.jpg', '.png', '.webp', '.jpeg')):
+        gid = os.path.splitext(fname)[0]
+        img_path = os.path.join(images_dir, fname)
+        with open(img_path, "rb") as f:
+            data = f.read()
+            mime = "image/png" if data[:8] == b"\x89PNG\r\n\x1a\n" else "image/jpeg"
+            b64 = base64.b64encode(data).decode("utf-8")
+            custom_covers[gid] = f"data:{mime};base64,{b64}"
 
-print(f"Matched {matched_count} of {len(games)} images!")
+print(f"Loaded {len(custom_covers)} pre-cached base64 covers from images/ directory!")
 
 def make_svg(game):
-    lines = game["lines"]
+    lines = game.get("lines", [game["title"]])
     line_count = len(lines)
     start_y = 118 - (line_count - 1) * 13
     text_tspans = ""
@@ -597,25 +352,14 @@ def make_svg(game):
         text_tspans += f'<text x="80" y="{y}" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="900" fill="#000000" text-anchor="middle" letter-spacing="0.2">{html.escape(line)}</text>\\n'
 
     is_hit = game.get("type") == "hit"
-    is_expansion = game.get("subtype") == "expansion"
-
-    if is_expansion:
-        top_badge_bg = "#ede9fe"
-        top_badge_color = "#6d28d9"
-        top_badge_text = "✨ DLC / EXPANSION"
-    elif is_hit:
-        top_badge_bg = "#dcfce7"
-        top_badge_color = "#15803d"
-        top_badge_text = "★ 2026 HIT (70+) ★"
-    else:
-        top_badge_bg = "#fef3c7"
-        top_badge_color = "#b45309"
-        top_badge_text = "🔥 ANTICIPATED"
+    top_badge_bg = "#dcfce7" if is_hit else "#fef3c7"
+    top_badge_color = "#15803d" if is_hit else "#b45309"
+    top_badge_text = "★ 2026 HIT (80+) ★" if is_hit else "🔥 ANTICIPATED"
 
     bottom_bg = "#000000" if is_hit else "#1e3a8a"
     sub1 = f"META: {game['meta']}" if is_hit else "COMING SOON"
     sub2 = f"{game['sales']} COPIES" if is_hit else f"{game['sales']}"
-    sub2_color = "#a78bfa" if is_expansion else ("#4ade80" if is_hit else "#fbbf24")
+    sub2_color = "#4ade80" if is_hit else "#fbbf24"
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="160" height="240" viewBox="0 0 160 240">
   <rect width="160" height="240" fill="#ffffff"/>
@@ -633,23 +377,23 @@ def make_svg(game):
     encoded = urllib.parse.quote(svg)
     return f"data:image/svg+xml;utf8,{encoded}"
 
-for g in games:
+for g in base_games:
     g["image"] = make_svg(g)
 
-hits_count = sum(1 for g in games if g["type"] == "hit")
-antic_count = sum(1 for g in games if g["type"] == "anticipated")
-expansions_count = sum(1 for g in games if g.get("subtype") == "expansion")
-total_count = len(games)
+hits_count = sum(1 for g in base_games if g["type"] == "hit")
+antic_count = sum(1 for g in base_games if g["type"] == "anticipated")
+total_count = len(base_games)
 
 covers_json = json.dumps(custom_covers)
-games_json = json.dumps(games, ensure_ascii=False)
+games_json = json.dumps(base_games, ensure_ascii=False)
+catalog_json = json.dumps(catalog_data, ensure_ascii=False)
 
-html_template = f'''<!DOCTYPE html>
+html_content = f'''<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Games TierList 2026 (70+ Meta, 1M+ Sales, DLC & Anticipated) - TierMaker</title>
+    <title>Video Games TierList 2026 (1M+ Sales, 80%+ Score, Catalog Search) - TierMaker</title>
     <style>
         * {{
             box-sizing: border-box;
@@ -799,126 +543,182 @@ html_template = f'''<!DOCTYPE html>
         .badge.blue {{ border-color: #60a5fa; }}
         .badge.purple {{ border-color: #a78bfa; }}
 
+        /* CONTROLS BAR */
+        .controls-bar {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #1a1a1a;
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            margin-bottom: 16px;
+        }}
+
+        .btn-group {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }}
+
+        .btn {{
+            background: #2d2d2d;
+            color: #ddd;
+            border: 1px solid #444;
+            padding: 7px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }}
+        .btn:hover {{
+            background: #3d3d3d;
+            color: #fff;
+            border-color: #666;
+        }}
+        .btn-primary {{
+            background: #166534;
+            color: #dcfce7;
+            border-color: #22c55e;
+        }}
+        .btn-primary:hover {{
+            background: #15803d;
+            color: #fff;
+        }}
+        .btn-danger {{
+            background: #7f1d1d;
+            color: #fee2e2;
+            border-color: #ef4444;
+        }}
+        .btn-danger:hover {{
+            background: #991b1b;
+            color: #fff;
+        }}
+
+        .save-indicator {{
+            font-size: 12px;
+            color: #4ade80;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }}
+
         /* TIER LIST TABLE */
-        #tier-wrap {{
-            width: 100%;
-            background: #000;
-            border: 2px solid #333;
+        #tier-container {{
+            background-color: #111111;
+            border: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             border-radius: 4px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 25px;
         }}
 
         .tier-row {{
             display: flex;
             min-height: 122px;
-            border-bottom: 1px solid #333;
-            background-color: #1a1a1a;
+            background-color: #141414;
+            border-bottom: 1px solid #222;
             position: relative;
         }}
 
-        .tier-row:last-child {{
-            border-bottom: none;
-        }}
-
         .label-holder {{
-            width: 105px;
-            min-width: 105px;
+            width: 110px;
+            min-width: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 8px;
-            font-weight: 800;
+            color: #000000;
             font-size: 18px;
-            color: #000;
-            cursor: pointer;
-            outline: none;
-            user-select: none;
+            font-weight: 900;
+            padding: 8px;
             word-break: break-word;
-            transition: filter 0.15s;
+            cursor: pointer;
+            user-select: none;
+            outline: none;
+            transition: opacity 0.15s;
         }}
         .label-holder:hover {{
-            filter: brightness(1.05);
+            opacity: 0.9;
         }}
 
         .tier-dropzone {{
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             flex-wrap: wrap;
             align-content: flex-start;
             padding: 4px;
             gap: 4px;
             min-height: 122px;
-            background: #141414;
-            transition: background-color 0.2s;
+            background-color: #141414;
+            transition: background-color 0.15s;
         }}
 
         .tier-dropzone.drag-over {{
-            background-color: #242424;
-            outline: 2px dashed #7fbfff;
+            background-color: #262626;
+            outline: 2px dashed #4ade80;
             outline-offset: -2px;
         }}
 
         .row-controls {{
-            width: 44px;
-            background: #202020;
-            border-left: 1px solid #333;
+            width: 38px;
+            background-color: #181818;
+            border-left: 1px solid #282828;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             align-items: center;
-            padding: 6px 0;
-            user-select: none;
+            justify-content: center;
+            gap: 6px;
+            padding: 4px 0;
         }}
 
         .row-btn {{
             background: none;
             border: none;
-            color: #888;
+            color: #666;
             cursor: pointer;
             font-size: 13px;
             padding: 4px;
-            border-radius: 4px;
+            border-radius: 3px;
             transition: 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
+            line-height: 1;
         }}
-
         .row-btn:hover {{
             color: #fff;
             background: #333;
         }}
 
-        /* GAME CARDS */
+        /* CARDS */
         .character {{
             width: 80px;
             height: 120px;
-            border-radius: 3px;
-            overflow: hidden;
+            background-color: #000;
             cursor: grab;
             user-select: none;
-            background-color: #111;
             position: relative;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-            transition: transform 0.12s, box-shadow 0.12s;
             flex-shrink: 0;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            transition: transform 0.1s, box-shadow 0.1s;
         }}
-
-        .character:hover {{
-            transform: scale(1.04);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.8);
-            z-index: 10;
-        }}
-
-        .character:active, .character.dragging {{
+        .character:active {{
             cursor: grabbing;
-            opacity: 0.45;
-            transform: scale(0.96);
+        }}
+        .character.dragging {{
+            opacity: 0.4;
+            transform: scale(0.95);
         }}
 
         .character img {{
@@ -937,141 +737,274 @@ html_template = f'''<!DOCTYPE html>
             background: rgba(0,0,0,0.85);
             color: #fff;
             font-size: 9.5px;
-            font-weight: 700;
-            line-height: 1.15;
-            padding: 3px 2px;
+            font-weight: bold;
+            padding: 2px 4px;
             text-align: center;
-            opacity: 0;
-            transition: opacity 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             pointer-events: none;
-            word-break: break-word;
-            border-top: 1px solid rgba(255,255,255,0.2);
+            border-top: 1px solid rgba(255,255,255,0.15);
         }}
 
-        .character:hover .card-tooltip {{
-            opacity: 1;
+        .card-new-highlight {{
+            animation: flashHighlight 1.5s ease-out;
         }}
 
-        /* UNRANKED POOL */
-        #pool-container {{
-            background: #1e1e1e;
-            border: 2px solid #333;
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 25px;
+        @keyframes flashHighlight {{
+            0% {{ transform: scale(1.15); box-shadow: 0 0 15px #4ade80; }}
+            100% {{ transform: scale(1); box-shadow: none; }}
         }}
 
-        .pool-header {{
+        /* UNRANKED POOL & SEARCH */
+        #unranked-container {{
+            background-color: #181818;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }}
+
+        .unranked-header {{
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #333;
         }}
 
-        .pool-title {{
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
+        .unranked-title-wrap {{
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }}
 
-        .pool-count {{
-            background: #333;
-            color: #aaa;
+        .unranked-title {{
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }}
+
+        .unranked-count-badge {{
+            background: #2a2a2a;
+            color: #4ade80;
             font-size: 12px;
+            font-weight: 700;
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 12px;
+            border: 1px solid #333;
         }}
 
         .filter-tabs {{
             display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
+            gap: 6px;
         }}
 
         .filter-tab {{
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: #ccc;
-            padding: 5px 14px;
+            background: #242424;
+            color: #aaa;
+            border: 1px solid #383838;
+            padding: 5px 12px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.15s;
         }}
-
         .filter-tab:hover {{
-            background: #383838;
+            background: #333;
+            color: #fff;
+        }}
+        .filter-tab.active {{
+            background: #3a5795;
+            color: #fff;
+            border-color: #476bb8;
+        }}
+
+        /* CATALOG SEARCH BAR */
+        .catalog-search-container {{
+            margin: 10px 0 16px 0;
+            position: relative;
+            width: 100%;
+        }}
+
+        .search-input-wrapper {{
+            display: flex;
+            align-items: center;
+            background: #121212;
+            border: 1.5px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 8px 14px;
+            gap: 10px;
+            transition: 0.2s;
+        }}
+
+        .search-input-wrapper:focus-within {{
+            border-color: #4ade80;
+            box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.2);
+        }}
+
+        .search-icon {{
+            font-size: 16px;
+            color: #888;
+        }}
+
+        #catalog-search-input {{
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            width: 100%;
+        }}
+
+        #catalog-search-input::placeholder {{
+            color: #777;
+        }}
+
+        .clear-search-btn {{
+            background: #2a2a2a;
+            border: none;
+            color: #bbb;
+            font-size: 12px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .clear-search-btn:hover {{
+            background: #444;
             color: #fff;
         }}
 
-        .filter-tab.active {{
-            background: #2563eb;
+        .catalog-dropdown {{
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: #1c1c1c;
+            border: 1px solid #444;
+            border-radius: 8px;
+            max-height: 380px;
+            overflow-y: auto;
+            z-index: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+        }}
+
+        .catalog-item {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid #2a2a2a;
+            transition: background 0.15s;
+            gap: 12px;
+        }}
+
+        .catalog-item:hover {{
+            background: #262626;
+        }}
+
+        .catalog-item-info {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }}
+
+        .catalog-item-poster {{
+            width: 36px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #222;
+            flex-shrink: 0;
+            border: 1px solid #333;
+        }}
+
+        .catalog-item-text {{
+            min-width: 0;
+        }}
+
+        .catalog-item-title {{
             color: #fff;
-            border-color: #3b82f6;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }}
+
+        .catalog-item-meta {{
+            font-size: 11px;
+            color: #999;
+            margin-top: 3px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }}
+
+        .catalog-source-tag {{
+            background: #2e3846;
+            color: #60a5fa;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }}
+
+        .btn-catalog-add {{
+            background: #166534;
+            color: #dcfce7;
+            border: 1px solid #22c55e;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            flex-shrink: 0;
+        }}
+
+        .btn-catalog-add:hover {{
+            background: #15803d;
+        }}
+        .btn-catalog-add:disabled {{
+            background: #333;
+            color: #777;
+            border-color: #444;
+            cursor: not-allowed;
+        }}
+
+        .badge-in-list {{
+            background: #27272a;
+            color: #a1a1aa;
+            border: 1px solid #3f3f46;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
         }}
 
         #unranked-pool {{
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            min-height: 140px;
-            background: #141414;
+            min-height: 130px;
+            background-color: #111111;
             padding: 10px;
             border-radius: 4px;
-            border: 1px dashed #444;
+            border: 1px solid #262626;
         }}
 
-        /* ACTION BUTTONS */
-        .actions-bar {{
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }}
-
-        .btn-action {{
-            background: #2e2e2e;
-            color: #fff;
-            border: 1px solid #444;
-            padding: 9px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.15s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }}
-
-        .btn-action:hover {{
-            background: #3e3e3e;
-        }}
-
-        .btn-action.primary {{
-            background: #2563eb;
-            border-color: #3b82f6;
-        }}
-        .btn-action.primary:hover {{
-            background: #1d4ed8;
-        }}
-
-        .btn-action.danger {{
-            background: #7f1d1d;
-            border-color: #991b1b;
-        }}
-        .btn-action.danger:hover {{
-            background: #991b1b;
-        }}
-
-        /* SETTINGS MODAL */
+        /* MODAL */
         #modal-overlay {{
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -1082,44 +1015,51 @@ html_template = f'''<!DOCTYPE html>
             z-index: 2000;
         }}
 
-        #modal-box {{
-            background: #222;
+        .modal-box {{
+            background: #1f1f1f;
             border: 1px solid #444;
-            border-radius: 6px;
-            width: 360px;
-            padding: 20px;
-            position: relative;
+            border-radius: 8px;
+            padding: 24px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }}
 
-        #modal-close {{
-            position: absolute;
-            top: 12px; right: 14px;
-            background: none; border: none;
-            color: #888; font-size: 18px;
-            cursor: pointer;
-        }}
-        #modal-close:hover {{ color: #fff; }}
-
-        .modal-input {{
-            width: 100%;
-            background: #151515;
-            border: 1px solid #444;
+        .modal-title {{
             color: #fff;
-            padding: 8px 10px;
-            font-size: 14px;
-            border-radius: 4px;
-            margin-bottom: 14px;
-            outline: none;
-        }}
-
-        .color-palette {{
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            font-size: 18px;
+            font-weight: bold;
             margin-bottom: 16px;
         }}
 
+        .form-group {{
+            margin-bottom: 16px;
+        }}
+        .form-group label {{
+            display: block;
+            color: #aaa;
+            font-size: 12px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }}
+        .form-group input[type="text"] {{
+            width: 100%;
+            background: #111;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }}
+
+        .color-palette {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }}
         .color-swatch {{
+            width: 32px;
             height: 32px;
             border-radius: 4px;
             cursor: pointer;
@@ -1131,55 +1071,53 @@ html_template = f'''<!DOCTYPE html>
             border-color: #fff;
         }}
 
-        .modal-footer {{
+        .modal-actions {{
             display: flex;
-            justify-content: flex-end;
-            gap: 8px;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
         }}
 
-        /* INFO TABLE */
-        .info-panel {{
-            background: #1e1e1e;
+        /* FOOTER TABLE */
+        .games-table-container {{
+            margin-top: 30px;
+            background: #181818;
             border: 1px solid #333;
-            border-radius: 4px;
-            padding: 20px;
-            margin-top: 15px;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
         }}
 
-        .info-panel h3 {{
-            color: #fff;
-            font-size: 17px;
-            margin-bottom: 12px;
-        }}
-
-        .info-table {{
+        .games-table {{
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-        }}
-
-        .info-table th, .info-table td {{
-            padding: 8px 12px;
             text-align: left;
-            border-bottom: 1px solid #2d2d2d;
         }}
-
-        .info-table th {{
-            color: #aaa;
-            background: #181818;
-            font-weight: 600;
+        .games-table th {{
+            background: #121212;
+            color: #fff;
+            padding: 10px 12px;
+            border-bottom: 2px solid #333;
         }}
-        .info-table td {{
+        .games-table td {{
+            padding: 8px 12px;
+            border-bottom: 1px solid #222;
             color: #ccc;
         }}
-        .info-table tr:hover {{
-            background: #222;
+        .games-table tr:hover td {{
+            background: #202020;
+        }}
+
+        #export-canvas {{
+            display: none;
         }}
     </style>
 </head>
 <body>
 
-    <div id="header">
+    <!-- HEADER -->
+    <header id="header">
         <div id="inner-header">
             <a href="#" class="logo-container">
                 <span class="logo-badge">TIER</span>
@@ -1187,215 +1125,206 @@ html_template = f'''<!DOCTYPE html>
                 <span class="header-tag">2026 EDITION</span>
             </a>
             <div class="header-nav">
-                <span id="header-save-indicator" style="font-size: 12px; color: #4ade80; display: inline-flex; align-items: center; gap: 5px; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); padding: 4px 10px; border-radius: 6px;">
-                    <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#4ade80; box-shadow: 0 0 5px #4ade80;"></span>
-                    Автосохранение
-                </span>
-                <button class="btn-header" onclick="resetAllToPool()">Вернуть в пул</button>
-                <button class="btn-header" style="background:#10b981;" onclick="exportTierList()">📸 Скачать PNG</button>
+                <span class="save-indicator" id="header-save-indicator">💾 Сохранено</span>
+                <button class="btn-header" onclick="exportTierList()">Скачать PNG</button>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div id="main-container">
-        
+    <!-- MAIN -->
+    <main id="main-container">
         <div id="breadcrumbs">
-            <a href="#">Video Games</a> / <span>Video Games TierList 2026 (70+ Meta, 1M+ Sales, DLC & Anticipated)</span> /
+            <a href="#">Главная</a> &gt; <a href="#">Видеоигры</a> &gt; <span>Tier List 2026</span>
         </div>
 
-        <h1>Video Games TierList 2026 (70+ Metacritic, 1M+ Sales, DLC & Anticipated)</h1>
+        <h1>Рейтинг видеоигр 2026 года (1M+ копий, 80%+ Steam & Ожидаемые блокбастеры)</h1>
         <p class="description">
-            Интерактивный Tier List главных релизов 2026 года по обновлённым критериям: оценка Metacritic от 70+, продажи от 1 миллиона копий, а также крупные сюжетные DLC, масштабные дополнения, Enchanted/Enhanced издания и самые ожидаемые новинки от ведущих студий.
+            Интерактивный тир-лист ключевых релизов 2026 года. Базовый ростер сформирован строго по критериям: 
+            <strong>полноценные релизы и ремейки</strong> (без DLC и Enhanced-изданий) с тиражом <strong>более 1 млн копий</strong> 
+            и пользовательской оценкой Steam <strong>80%+</strong>, а также главные ожидаемые блокбастеры из каталога PC JSON и PS5. 
+            Используйте строку поиска, чтобы мгновенно найти и добавить любую из <strong>1270+ игр</strong> каталога!
         </p>
 
+        <!-- CRITERIA BADGES -->
         <div class="criteria-badges">
-            <span class="badge green">🏆 Вышедшие игры 2026 года: 70+ Metacritic и 1M+ продаж</span>
-            <span class="badge purple">✨ Включая крупные DLC, расширения и Enchanted/Enhanced издания</span>
-            <span class="badge blue">🔥 Самые ожидаемые блокбастеры конца 2026 года</span>
+            <div class="badge green">★ Полноценные релизы & ремейки (без DLC)</div>
+            <div class="badge green">💰 Продажи 1M+ копий</div>
+            <div class="badge green">👍 Оценка Steam 80%+</div>
+            <div class="badge blue">🔥 Ожидаемые блокбастеры 2026 (PS5 / PC)</div>
+            <div class="badge purple">🔍 Поиск по базе из 1270+ игр с автоскачиванием обложек</div>
+            <div class="badge yellow">💾 Локальное автосохранение позиций</div>
         </div>
 
-        <!-- TIER LIST BOARD -->
-        <div id="tier-wrap">
-            <div id="tier-container">
+        <!-- CONTROLS BAR -->
+        <div class="controls-bar">
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="addNewRow()">+ Добавить строку</button>
+                <button class="btn" onclick="resetAllToPool()">Вернуть все в пул</button>
+                <button class="btn btn-danger" onclick="resetToDefault()">Сбросить до начального</button>
+            </div>
+            <div class="btn-group" style="align-items: center;">
+                <span class="save-indicator" id="save-status-msg">Автосохранение выполнено ✓</span>
+                <button class="btn btn-primary" onclick="exportTierList()">📥 Скачать изображение (PNG)</button>
+            </div>
+        </div>
 
-                <div class="tier-row" data-row-id="s-plus">
-                    <div class="label-holder" contenteditable="true" style="background-color: #FF7F7F;">S+</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
+        <!-- TIER CONTAINER -->
+        <div id="tier-container">
+            <div class="tier-row" data-row-id="tier-s">
+                <div class="label-holder" contenteditable="true" style="background-color: #FF7F7F;">S</div>
+                <div class="tier-dropzone"></div>
+                <div class="row-controls">
+                    <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
+                    <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
+                    <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
                 </div>
-
-                <div class="tier-row" data-row-id="s">
-                    <div class="label-holder" contenteditable="true" style="background-color: #FFBF7F;">S</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
+            </div>
+            <div class="tier-row" data-row-id="tier-a">
+                <div class="label-holder" contenteditable="true" style="background-color: #FFBF7F;">A</div>
+                <div class="tier-dropzone"></div>
+                <div class="row-controls">
+                    <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
+                    <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
+                    <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
                 </div>
-
-                <div class="tier-row" data-row-id="a">
-                    <div class="label-holder" contenteditable="true" style="background-color: #FFDF7F;">A</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
+            </div>
+            <div class="tier-row" data-row-id="tier-b">
+                <div class="label-holder" contenteditable="true" style="background-color: #FFFF7F;">B</div>
+                <div class="tier-dropzone"></div>
+                <div class="row-controls">
+                    <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
+                    <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
+                    <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
                 </div>
-
-                <div class="tier-row" data-row-id="b">
-                    <div class="label-holder" contenteditable="true" style="background-color: #FFFF7F;">B</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
+            </div>
+            <div class="tier-row" data-row-id="tier-c">
+                <div class="label-holder" contenteditable="true" style="background-color: #7FFF7F;">C</div>
+                <div class="tier-dropzone"></div>
+                <div class="row-controls">
+                    <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
+                    <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
+                    <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
                 </div>
-
-                <div class="tier-row" data-row-id="c">
-                    <div class="label-holder" contenteditable="true" style="background-color: #BFFF7F;">C</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
+            </div>
+            <div class="tier-row" data-row-id="tier-d">
+                <div class="label-holder" contenteditable="true" style="background-color: #7FBFFF;">D</div>
+                <div class="tier-dropzone"></div>
+                <div class="row-controls">
+                    <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
+                    <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
+                    <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
                 </div>
-
-                <div class="tier-row" data-row-id="d">
-                    <div class="label-holder" contenteditable="true" style="background-color: #7FFF7F;">D</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
-                </div>
-
-                <div class="tier-row" data-row-id="wanna-play">
-                    <div class="label-holder" contenteditable="true" style="background-color: #7F7FFF;">Wanna Play</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
-                </div>
-
-                <div class="tier-row" data-row-id="dont-know">
-                    <div class="label-holder" contenteditable="true" style="background-color: #FF7FFF;">Dont Know</div>
-                    <div class="tier-dropzone"></div>
-                    <div class="row-controls">
-                        <button class="row-btn" onclick="openRowSettings(this)" title="Настройки">⚙️</button>
-                        <button class="row-btn" onclick="moveRowUp(this)" title="Вверх">▲</button>
-                        <button class="row-btn" onclick="moveRowDown(this)" title="Вниз">▼</button>
-                    </div>
-                </div>
-
             </div>
         </div>
 
         <!-- UNRANKED POOL -->
-        <div id="pool-container">
-            <div class="pool-header">
-                <div class="pool-title">
-                    <span>🎮 Доступные игры (в пуле):</span>
-                    <span class="pool-count" id="unranked-count">{total_count} игр</span>
-                    <span id="save-status-msg" style="font-size:12px; color:#4ade80; margin-left:12px; opacity:0; transition:opacity 0.3s; font-weight:normal;">💾 Позиции сохранены в браузере</span>
+        <div id="unranked-container">
+            <div class="unranked-header">
+                <div class="unranked-title-wrap">
+                    <span class="unranked-title">ДОСТУПНЫЕ ИГРЫ</span>
+                    <span class="unranked-count-badge" id="unranked-count">28 игр</span>
                 </div>
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <button class="btn-action" style="padding: 4px 12px; font-size: 12px;" onclick="resetAllToPool()">Вернуть все в пул</button>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterCards('all', this)">Все игры</button>
+                    <button class="filter-tab" onclick="filterCards('hit', this)">★ Хиты 2026 (80+)</button>
+                    <button class="filter-tab" onclick="filterCards('anticipated', this)">🔥 Ожидаемые 2026</button>
                 </div>
             </div>
 
-            <div class="filter-tabs">
-                <button class="filter-tab active" onclick="filterCards('all', this)">Все ({total_count})</button>
-                <button class="filter-tab" onclick="filterCards('hit', this)">🏆 Релизы 70+ & 1M+ ({hits_count})</button>
-                <button class="filter-tab" onclick="filterCards('expansion', this)">✨ DLC & Издания ({expansions_count})</button>
-                <button class="filter-tab" onclick="filterCards('anticipated', this)">🔥 Самые ожидаемые ({antic_count})</button>
+            <!-- SEARCH IN CATALOG -->
+            <div class="catalog-search-container">
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="catalog-search-input" placeholder="Поиск по каталогу 1270+ игр (JSON & PS5) для добавления на доску..." autocomplete="off">
+                    <button id="catalog-search-clear" class="clear-search-btn" style="display:none;" onclick="clearCatalogSearch()">✕</button>
+                </div>
+                <div id="catalog-search-dropdown" class="catalog-dropdown" style="display:none;"></div>
             </div>
-            
-            <div id="unranked-pool" class="tier-dropzone">
-                <!-- CARDS INSERTED VIA JAVASCRIPT -->
-            </div>
+
+            <div id="unranked-pool" class="tier-dropzone"></div>
         </div>
 
-        <!-- ACTION BUTTONS -->
-        <div class="actions-bar">
-            <button class="btn-action primary" onclick="exportTierList()">📸 Сохранить / Скачать изображение</button>
-            <button class="btn-action" onclick="addNewRow()">➕ Добавить строку</button>
-            <button class="btn-action" onclick="resetAllToPool()">🔄 Вернуть всё в пул</button>
-            <button class="btn-action danger" onclick="resetToDefault()" style="background:#7f1d1d; border-color:#991b1b;">↺ Сбросить до начального вида</button>
-        </div>
-
-        <!-- INFO TABLE ABOUT THE GAMES -->
-        <div class="info-panel">
-            <h3>📊 Список всех {total_count} ключевых игр 2026 года (70+ Metacritic, 1M+ продаж, DLC & Ожидаемые)</h3>
-            <table class="info-table">
+        <!-- TABLE OF ALL BASE GAMES -->
+        <div class="games-table-container">
+            <h3 style="color:#fff; margin-bottom:12px; font-size:16px;">Информация о релизах базы 2026</h3>
+            <table class="games-table">
                 <thead>
                     <tr>
-                        <th>Игра</th>
-                        <th>Категория / Рейтинг</th>
-                        <th>Статус / Продажи</th>
+                        <th>Название игры</th>
+                        <th>Статус / Оценка</th>
+                        <th>Дата релиза</th>
                         <th>Платформы</th>
                     </tr>
                 </thead>
-                <tbody id="games-table-body">
-                    <!-- POPULATED VIA JS -->
-                </tbody>
+                <tbody id="games-table-body"></tbody>
             </table>
         </div>
+    </main>
 
-    </div>
-
-    <!-- ROW SETTINGS MODAL -->
-    <div id="modal-overlay" onclick="if(event.target===this) closeModal()">
-        <div id="modal-box">
-            <button id="modal-close" onclick="closeModal()">✕</button>
-            <h3 style="color:#fff; margin-bottom:10px;">Настройка строки тира</h3>
-            
-            <p style="font-size:13px; color:#aaa; margin-bottom:6px;">Название тира:</p>
-            <input type="text" id="modal-label-input" class="modal-input" placeholder="Название тира...">
-
-            <p style="font-size:13px; color:#aaa; margin-bottom:6px;">Цвет фона ярлыка:</p>
-            <div class="color-palette">
-                <div class="color-swatch" style="background:#FF7F7F" onclick="setRowColor('#FF7F7F')"></div>
-                <div class="color-swatch" style="background:#FFBF7F" onclick="setRowColor('#FFBF7F')"></div>
-                <div class="color-swatch" style="background:#FFDF7F" onclick="setRowColor('#FFDF7F')"></div>
-                <div class="color-swatch" style="background:#FFFF7F" onclick="setRowColor('#FFFF7F')"></div>
-                <div class="color-swatch" style="background:#BFFF7F" onclick="setRowColor('#BFFF7F')"></div>
-                <div class="color-swatch" style="background:#7FFF7F" onclick="setRowColor('#7FFF7F')"></div>
-                <div class="color-swatch" style="background:#7FFFFF" onclick="setRowColor('#7FFFFF')"></div>
-                <div class="color-swatch" style="background:#7FBFFF" onclick="setRowColor('#7FBFFF')"></div>
-                <div class="color-swatch" style="background:#7F7FFF" onclick="setRowColor('#7F7FFF')"></div>
-                <div class="color-swatch" style="background:#FF7FFF" onclick="setRowColor('#FF7FFF')"></div>
-                <div class="color-swatch" style="background:#BF7FBF" onclick="setRowColor('#BF7FBF')"></div>
-                <div class="color-swatch" style="background:#3B3B3B" onclick="setRowColor('#3B3B3B')"></div>
-                <div class="color-swatch" style="background:#858585" onclick="setRowColor('#858585')"></div>
-                <div class="color-swatch" style="background:#CFCFCF" onclick="setRowColor('#CFCFCF')"></div>
-                <div class="color-swatch" style="background:#F7F7F7" onclick="setRowColor('#F7F7F7')"></div>
+    <!-- MODAL FOR ROW EDIT -->
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">Настройки строки</div>
+            <div class="form-group">
+                <label>Название категории:</label>
+                <input type="text" id="modal-label-input" maxlength="25">
             </div>
-
-            <div class="modal-footer" style="margin-top:20px;">
-                <button class="btn-action danger" onclick="deleteCurrentRow()">Удалить строку</button>
-                <button class="btn-action" onclick="clearCurrentRow()">Очистить строку</button>
-                <button class="btn-action primary" onclick="saveRowSettings()">Сохранить</button>
+            <div class="form-group">
+                <label>Цвет категории:</label>
+                <div class="color-palette">
+                    <div class="color-swatch" style="background:#FF7F7F;" onclick="setRowColor('#FF7F7F')"></div>
+                    <div class="color-swatch" style="background:#FFBF7F;" onclick="setRowColor('#FFBF7F')"></div>
+                    <div class="color-swatch" style="background:#FFFF7F;" onclick="setRowColor('#FFFF7F')"></div>
+                    <div class="color-swatch" style="background:#7FFF7F;" onclick="setRowColor('#7FFF7F')"></div>
+                    <div class="color-swatch" style="background:#7FBFFF;" onclick="setRowColor('#7FBFFF')"></div>
+                    <div class="color-swatch" style="background:#7F7FFF;" onclick="setRowColor('#7F7FFF')"></div>
+                    <div class="color-swatch" style="background:#FF7FFF;" onclick="setRowColor('#FF7FFF')"></div>
+                    <div class="color-swatch" style="background:#858585;" onclick="setRowColor('#858585')"></div>
+                    <div class="color-swatch" style="background:#3b82f6;" onclick="setRowColor('#3b82f6')"></div>
+                    <div class="color-swatch" style="background:#10b981;" onclick="setRowColor('#10b981')"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <div>
+                    <button class="btn btn-danger" onclick="deleteCurrentRow()">Удалить строку</button>
+                    <button class="btn" onclick="clearCurrentRow()">Очистить</button>
+                </div>
+                <div>
+                    <button class="btn" onclick="closeModal()">Отмена</button>
+                    <button class="btn btn-primary" onclick="saveRowSettings()">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <canvas id="export-canvas" style="display: none;"></canvas>
+    <canvas id="export-canvas"></canvas>
 
     <script>
-        const GAMES_DATA = {games_json};
+        const STORAGE_KEY = 'tierlist_2026_state_v3';
+        const STORAGE_CUSTOM_GAMES = 'tierlist_2026_custom_games';
+        const STORAGE_SAVED_COVERS = 'tierlist_2026_saved_covers';
+
+        const BASE_GAMES = {games_json};
         const GAME_CUSTOM_COVERS = {covers_json};
-        const STORAGE_KEY = 'video_games_tierlist_2026_save_v1';
+        const CATALOG_DATA = {catalog_json};
+
+        let customCoversCache = {{}};
+        try {{
+            customCoversCache = JSON.parse(localStorage.getItem(STORAGE_SAVED_COVERS) || '{{}}');
+        }} catch(e) {{}}
+
+        let customAddedGames = [];
+        try {{
+            customAddedGames = JSON.parse(localStorage.getItem(STORAGE_CUSTOM_GAMES) || '[]');
+        }} catch(e) {{}}
+
+        // Combined games array
+        let GAMES_DATA = [...BASE_GAMES];
+        customAddedGames.forEach(cg => {{
+            if (!GAMES_DATA.some(g => g.id === cg.id)) {{
+                GAMES_DATA.push(cg);
+            }}
+        }});
 
         let activeEditingRow = null;
         let currentFilter = 'all';
@@ -1420,17 +1349,14 @@ html_template = f'''<!DOCTYPE html>
                 stopAutoScroll();
                 return;
             }}
-
-            const threshold = 120; // px from top or bottom of viewport
-            const maxSpeed = 22;   // max pixels to scroll per frame
+            const threshold = 120;
+            const maxSpeed = 22;
             const vh = window.innerHeight;
 
             if (clientY >= 0 && clientY < threshold) {{
-                // Closer to top -> faster scroll up
                 const factor = Math.max(0.1, (threshold - clientY) / threshold);
                 autoScrollSpeed = -Math.round(4 + factor * (maxSpeed - 4));
             }} else if (clientY > vh - threshold && clientY <= vh + 100) {{
-                // Closer to bottom -> faster scroll down
                 const factor = Math.max(0.1, (clientY - (vh - threshold)) / threshold);
                 autoScrollSpeed = Math.round(4 + factor * (maxSpeed - 4));
             }} else {{
@@ -1450,7 +1376,6 @@ html_template = f'''<!DOCTYPE html>
             }}
         }}
 
-        // --- HTML HELPER ---
         function escapeHtml(str) {{
             if (!str) return '';
             return String(str)
@@ -1458,6 +1383,327 @@ html_template = f'''<!DOCTYPE html>
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }}
+
+        function isGameAlreadyOnBoard(gameId) {{
+            return !!document.querySelector('[data-game-id="' + gameId + '"]');
+        }}
+
+        // --- DYNAMIC COVER DOWNLOAD LOGIC ---
+        function downloadImageAsDataUrl(url) {{
+            return new Promise((resolve, reject) => {{
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {{
+                    try {{
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth || 600;
+                        canvas.height = img.naturalHeight || 900;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        resolve(dataUrl);
+                    }} catch (e) {{
+                        resolve(url);
+                    }}
+                }};
+                img.onerror = (e) => reject(e);
+                img.src = url;
+            }});
+        }}
+
+        async function fetchWikipediaCover(title) {{
+            const cleanTitle = title.replace(/['’"™®:!?,.()&]/g, '').trim();
+            const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${{encodeURIComponent(cleanTitle)}}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
+            try {{
+                const resp = await fetch(apiUrl);
+                const data = await resp.json();
+                const pages = data.query?.pages;
+                if (pages) {{
+                    for (const pid in pages) {{
+                        const thumb = pages[pid].thumbnail?.source;
+                        if (thumb) return thumb;
+                    }}
+                }}
+            }} catch(e) {{}}
+            return null;
+        }}
+
+        function makeDynamicCoverSvg(title, source, date) {{
+            const words = title.split(' ');
+            let lines = [];
+            let cur = '';
+            words.forEach(w => {{
+                if ((cur + ' ' + w).trim().length > 14) {{
+                    if (cur) lines.push(cur);
+                    cur = w;
+                }} else {{
+                    cur = (cur + ' ' + w).trim();
+                }}
+            }});
+            if (cur) lines.push(cur);
+            lines = lines.slice(0, 4);
+
+            const startY = 110 - (lines.length - 1) * 12;
+            let tspans = '';
+            lines.forEach((l, i) => {{
+                tspans += `<text x="80" y="${{startY + i * 24}}" font-family="Arial, sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">${{escapeHtml(l)}}</text>`;
+            }});
+
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="240" viewBox="0 0 160 240">
+  <rect width="160" height="240" fill="#181818"/>
+  <rect x="4" y="4" width="152" height="232" fill="#202020" stroke="#4ade80" stroke-width="2" rx="4"/>
+  <rect x="8" y="8" width="144" height="22" fill="#2e3846" rx="3"/>
+  <text x="80" y="23" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#60a5fa" text-anchor="middle">${{escapeHtml(source || 'CATALOG 2026')}}</text>
+  ${{tspans}}
+  <rect x="8" y="196" width="144" height="34" fill="#000000" rx="3"/>
+  <text x="80" y="211" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">${{escapeHtml(date ? ('Релиз ' + date) : '2026')}}</text>
+  <text x="80" y="224" font-family="Arial, sans-serif" font-size="8.5" font-weight="bold" fill="#4ade80" text-anchor="middle">★ ДОБАВЛЕНО ИЗ БАЗЫ</text>
+</svg>`;
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        }}
+
+        // --- CATALOG SEARCH & ADD ---
+        let searchDebounce = null;
+        const searchInput = document.getElementById('catalog-search-input');
+        const searchDropdown = document.getElementById('catalog-search-dropdown');
+        const clearSearchBtn = document.getElementById('catalog-search-clear');
+
+        if (searchInput) {{
+            searchInput.addEventListener('input', function() {{
+                clearTimeout(searchDebounce);
+                const q = this.value.trim();
+                if (q.length > 0) {{
+                    clearSearchBtn.style.display = 'block';
+                }} else {{
+                    clearSearchBtn.style.display = 'none';
+                    searchDropdown.style.display = 'none';
+                    return;
+                }}
+
+                searchDebounce = setTimeout(() => {{
+                    executeCatalogSearch(q);
+                }}, 120);
+            }});
+
+            searchInput.addEventListener('focus', function() {{
+                const q = this.value.trim();
+                if (q.length > 0) {{
+                    executeCatalogSearch(q);
+                }}
+            }});
+        }}
+
+        function clearCatalogSearch() {{
+            if (searchInput) {{
+                searchInput.value = '';
+                clearSearchBtn.style.display = 'none';
+                searchDropdown.style.display = 'none';
+            }}
+        }}
+
+        document.addEventListener('click', function(e) {{
+            if (!e.target.closest('.catalog-search-container')) {{
+                if (searchDropdown) searchDropdown.style.display = 'none';
+            }}
+        }});
+
+        function executeCatalogSearch(query) {{
+            const q = query.toLowerCase();
+            const matches = [];
+
+            for (let i = 0; i < CATALOG_DATA.length; i++) {{
+                const g = CATALOG_DATA[i];
+                const t = g.title.toLowerCase();
+                if (t.includes(q)) {{
+                    const starts = t.startsWith(q);
+                    matches.push({{ game: g, priority: starts ? 1 : 2 }});
+                }}
+            }}
+
+            matches.sort((a, b) => a.priority - b.priority);
+            const results = matches.slice(0, 20).map(m => m.game);
+
+            if (results.length === 0) {{
+                searchDropdown.innerHTML = '<div style="padding:14px; text-align:center; color:#777; font-size:13px;">Игры по запросу "' + escapeHtml(query) + '" не найдены в каталоге</div>';
+                searchDropdown.style.display = 'block';
+                return;
+            }}
+
+            let html = '';
+            results.forEach(g => {{
+                const inList = isGameAlreadyOnBoard(g.id);
+                const thumb = GAME_CUSTOM_COVERS[g.id] || customCoversCache[g.id] || (g.appid ? `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${{g.appid}}/library_600x900.jpg` : '');
+                
+                const thumbImg = thumb ? 
+                    `<img class="catalog-item-poster" src="${{thumb}}" onerror="this.style.display='none';">` : 
+                    `<div class="catalog-item-poster" style="display:flex;align-items:center;justify-content:center;color:#666;font-size:18px;">🎮</div>`;
+
+                html += `
+                    <div class="catalog-item" id="catalog-item-${{g.id}}">
+                        <div class="catalog-item-info">
+                            ${{thumbImg}}
+                            <div class="catalog-item-text">
+                                <div class="catalog-item-title">${{escapeHtml(g.title)}}</div>
+                                <div class="catalog-item-meta">
+                                    <span class="catalog-source-tag">${{escapeHtml(g.source)}}</span>
+                                    <span>${{escapeHtml(g.date || '2026')}}</span>
+                                    <span>• ${{escapeHtml(g.platform)}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            ${{inList ? 
+                                '<span class="badge-in-list">✓ На доске</span>' : 
+                                `<button class="btn-catalog-add" id="btn-add-${{g.id}}" onclick="addGameFromCatalog('${{g.id}}')">+ Добавить</button>`
+                            }}
+                        </div>
+                    </div>
+                `;
+            }});
+
+            searchDropdown.innerHTML = html;
+            searchDropdown.style.display = 'block';
+        }}
+
+        async function addGameFromCatalog(gameId) {{
+            const game = CATALOG_DATA.find(g => g.id === gameId);
+            if (!game) return;
+
+            if (isGameAlreadyOnBoard(game.id)) {{
+                alert(`Игра "${{game.title}}" уже добавлена в тир-лист!`);
+                return;
+            }}
+
+            const btn = document.getElementById('btn-add-' + game.id);
+            if (btn) {{
+                btn.disabled = true;
+                btn.textContent = '⏳ Загрузка...';
+            }}
+
+            // 1. Check local poster or download
+            let posterSrc = GAME_CUSTOM_COVERS[game.id] || customCoversCache[game.id];
+
+            if (!posterSrc) {{
+                // Download from Steam CDN if appid exists
+                if (game.appid) {{
+                    const steamUrl = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${{game.appid}}/library_600x900.jpg`;
+                    try {{
+                        posterSrc = await downloadImageAsDataUrl(steamUrl);
+                    }} catch (e) {{
+                        console.warn('Steam cover fetch failed, trying wiki/svg:', e);
+                    }}
+                }}
+
+                // Try wiki if still no poster
+                if (!posterSrc) {{
+                    try {{
+                        const wikiThumb = await fetchWikipediaCover(game.title);
+                        if (wikiThumb) {{
+                            posterSrc = await downloadImageAsDataUrl(wikiThumb);
+                        }}
+                    }} catch (e) {{}}
+                }}
+
+                // Fallback to high quality generated SVG
+                if (!posterSrc) {{
+                    posterSrc = makeDynamicCoverSvg(game.title, game.source, game.date);
+                }}
+
+                // Save to local cache
+                customCoversCache[game.id] = posterSrc;
+                try {{
+                    localStorage.setItem(STORAGE_SAVED_COVERS, JSON.stringify(customCoversCache));
+                }} catch(e) {{
+                    console.warn('Cover quota warning:', e);
+                }}
+            }}
+
+            // 2. Build game object
+            const isHit = game.date && game.date <= '2026-09-12';
+            const newGameObject = {{
+                id: game.id,
+                title: game.title,
+                type: isHit ? 'hit' : 'anticipated',
+                subtype: 'original',
+                meta: isHit ? '80+' : 'HYPE',
+                sales: game.date ? (isHit ? '1.0M+' : game.date) : '2026',
+                status: game.date ? `Релиз ${{game.date}} (${{game.source}})` : game.platform,
+                platforms: game.platform || 'PC',
+                image: posterSrc
+            }};
+
+            if (!GAMES_DATA.some(g => g.id === newGameObject.id)) {{
+                GAMES_DATA.push(newGameObject);
+            }}
+
+            if (!customAddedGames.some(g => g.id === newGameObject.id)) {{
+                customAddedGames.push(newGameObject);
+                try {{
+                    localStorage.setItem(STORAGE_CUSTOM_GAMES, JSON.stringify(customAddedGames));
+                }} catch(e) {{}}
+            }}
+
+            // 3. Create card and append to pool
+            const pool = document.getElementById('unranked-pool');
+            const card = createCardElement(newGameObject);
+            card.classList.add('card-new-highlight');
+            pool.appendChild(card);
+
+            updateCounts();
+            saveState();
+
+            // 4. Update button in dropdown
+            if (btn) {{
+                btn.outerHTML = '<span class="badge-in-list">✓ Добавлено</span>';
+            }}
+
+            // Highlight card in pool
+            card.scrollIntoView({{ behavior: 'smooth', block: 'nearest' }});
+        }}
+
+        function createCardElement(game) {{
+            const card = document.createElement('div');
+            card.className = 'character';
+            card.id = 'game-' + game.id;
+            card.setAttribute('draggable', 'true');
+            card.setAttribute('data-game-id', game.id);
+            card.setAttribute('data-game-title', game.title);
+            card.setAttribute('data-game-type', game.type);
+            card.setAttribute('data-game-subtype', game.subtype || 'original');
+
+            const imgSrc = GAME_CUSTOM_COVERS[game.id] || customCoversCache[game.id] || game.image || ('images/' + game.id + '.jpg');
+            const fallbackSrc = game.image || makeDynamicCoverSvg(game.title, '2026', '');
+
+            card.innerHTML = 
+                '<img src="' + imgSrc + '" data-id="' + game.id + '" data-fallback="' + fallbackSrc + '" onerror="this.onerror=null;this.src=this.dataset.fallback;" alt="' + escapeHtml(game.title) + '" id="img-' + game.id + '">' +
+                '<div class="card-tooltip">' + escapeHtml(game.title) + '</div>';
+
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            card.addEventListener('drag', function(e) {{
+                if (draggedItem && e.clientY && e.clientY > 0) {{
+                    handleAutoScroll(e.clientY);
+                }}
+            }});
+
+            card.addEventListener('touchstart', handleTouchStart, {{ passive: false }});
+            card.addEventListener('touchmove', handleTouchMove, {{ passive: false }});
+            card.addEventListener('touchend', handleTouchEnd, {{ passive: false }});
+            card.addEventListener('touchcancel', handleTouchEnd, {{ passive: false }});
+
+            card.addEventListener('click', function(e) {{
+                if (this.parentElement.id === 'unranked-pool') {{
+                    const firstTier = document.querySelector('.tier-row .tier-dropzone');
+                    if (firstTier) firstTier.appendChild(this);
+                }} else {{
+                    document.getElementById('unranked-pool').appendChild(this);
+                }}
+                updateCounts();
+                saveState();
+            }});
+
+            return card;
         }}
 
         function createTierRowElement(rowId, labelText, color) {{
@@ -1536,7 +1782,7 @@ html_template = f'''<!DOCTYPE html>
                 }}
 
                 const state = {{
-                    version: 1,
+                    version: 3,
                     timestamp: Date.now(),
                     tiers: tiersData,
                     pool: poolItems
@@ -1590,7 +1836,7 @@ html_template = f'''<!DOCTYPE html>
                     }});
                 }}
 
-                // Ensure any newly added games from site updates appear in pool
+                // Any newly registered or base games not yet placed go into pool
                 GAMES_DATA.forEach(game => {{
                     if (!placedIds.has(game.id)) {{
                         const card = document.getElementById('game-' + game.id);
@@ -1616,59 +1862,14 @@ html_template = f'''<!DOCTYPE html>
             tableBody.innerHTML = '';
 
             GAMES_DATA.forEach(game => {{
-                const card = document.createElement('div');
-                card.className = 'character';
-                card.id = 'game-' + game.id;
-                card.setAttribute('draggable', 'true');
-                card.setAttribute('data-game-id', game.id);
-                card.setAttribute('data-game-title', game.title);
-                card.setAttribute('data-game-type', game.type);
-                card.setAttribute('data-game-subtype', game.subtype || 'original');
-
-                const imgSrc = GAME_CUSTOM_COVERS[game.id] || ('images/' + game.id + '.jpg');
-                
-                card.innerHTML = 
-                    '<img src="' + imgSrc + '" data-id="' + game.id + '" data-fallback="' + game.image + '" onerror="this.onerror=null;this.src=this.dataset.fallback;" alt="' + escapeHtml(game.title) + '" id="img-' + game.id + '">' +
-                    '<div class="card-tooltip">' + escapeHtml(game.title) + '</div>';
-
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-                card.addEventListener('drag', function(e) {{
-                    if (draggedItem && e.clientY && e.clientY > 0) {{
-                        handleAutoScroll(e.clientY);
-                    }}
-                }});
-
-                card.addEventListener('touchstart', handleTouchStart, {{ passive: false }});
-                card.addEventListener('touchmove', handleTouchMove, {{ passive: false }});
-                card.addEventListener('touchend', handleTouchEnd, {{ passive: false }});
-                card.addEventListener('touchcancel', handleTouchEnd, {{ passive: false }});
-
-                card.addEventListener('click', function(e) {{
-                    if (this.parentElement.id === 'unranked-pool') {{
-                        const firstTier = document.querySelector('.tier-row .tier-dropzone');
-                        if (firstTier) firstTier.appendChild(this);
-                    }} else {{
-                        document.getElementById('unranked-pool').appendChild(this);
-                    }}
-                    updateCounts();
-                    saveState();
-                }});
-
+                const card = createCardElement(game);
                 pool.appendChild(card);
 
                 const tr = document.createElement('tr');
                 const isHit = game.type === 'hit';
-                const isExp = game.subtype === 'expansion';
-                let tagColor = '#60a5fa';
-                let typeLabel = '🔥 Ожидается (' + game.meta + ')';
-                if (isExp) {{
-                    tagColor = '#a78bfa';
-                    typeLabel = '✨ ' + (isHit ? ('★ ' + game.meta) : 'Ожидается') + ' (DLC/Изд.)';
-                }} else if (isHit) {{
-                    tagColor = '#4ade80';
-                    typeLabel = '★ ' + game.meta;
-                }}
+                let tagColor = isHit ? '#4ade80' : '#60a5fa';
+                let typeLabel = isHit ? ('★ ' + game.meta) : ('🔥 ' + game.meta);
+
                 tr.innerHTML = 
                     '<td style="font-weight:bold; color:#fff;">' + escapeHtml(game.title) + '</td>' +
                     '<td><span style="color:' + tagColor + '; font-weight:bold;">' + typeLabel + '</span></td>' +
@@ -1687,13 +1888,10 @@ html_template = f'''<!DOCTYPE html>
 
             document.querySelectorAll('#unranked-pool .character').forEach(card => {{
                 const cType = card.getAttribute('data-game-type');
-                const cSubtype = card.getAttribute('data-game-subtype');
                 if (type === 'all') {{
                     card.style.display = 'block';
                 }} else if (type === 'hit') {{
                     card.style.display = (cType === 'hit') ? 'block' : 'none';
-                }} else if (type === 'expansion') {{
-                    card.style.display = (cSubtype === 'expansion') ? 'block' : 'none';
                 }} else if (type === 'anticipated') {{
                     card.style.display = (cType === 'anticipated') ? 'block' : 'none';
                 }} else {{
@@ -1792,7 +1990,8 @@ html_template = f'''<!DOCTYPE html>
         function getDragAfterElement(container, x, y) {{
             const draggableElements = [...container.querySelectorAll('.character:not(.dragging)')];
 
-            for (const child of draggableElements) {{
+            for (let i = 0; i < draggableElements.length; i++) {{
+                const child = draggableElements[i];
                 const box = child.getBoundingClientRect();
                 if (y >= box.top && y <= box.bottom) {{
                     if (x < box.left + box.width / 2) {{
@@ -1853,9 +2052,10 @@ html_template = f'''<!DOCTYPE html>
         }}
 
         function resetToDefault() {{
-            if (confirm('Сбросить весь тир-лист до начального вида? Все добавленные строки, переименования и расставленные позиции будут удалены из памяти браузера.')) {{
+            if (confirm('Сбросить весь тир-лист до начального вида? Все добавленные строки, переименования, расставленные позиции и добавленные игры будут сброшены.')) {{
                 try {{
                     localStorage.removeItem(STORAGE_KEY);
+                    localStorage.removeItem(STORAGE_CUSTOM_GAMES);
                 }} catch(e) {{}}
                 window.location.reload();
             }}
@@ -1952,7 +2152,7 @@ html_template = f'''<!DOCTYPE html>
             ctx.fillRect(0, 0, width, 60);
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 20px Arial, sans-serif';
-            ctx.fillText('VIDEO GAMES 2026 TIER LIST (70+ Meta, 1M+ Sales, DLC & Anticipated)', 20, 37);
+            ctx.fillText('VIDEO GAMES 2026 TIER LIST (1M+ Sales, 80%+ Score & Anticipated)', 20, 37);
 
             ctx.fillStyle = '#888';
             ctx.font = '13px Arial, sans-serif';
@@ -2019,7 +2219,6 @@ html_template = f'''<!DOCTYPE html>
         }}
 
         function setupGlobalEvents() {{
-            // Auto-scroll when dragging anywhere on the page
             document.addEventListener('dragover', function(e) {{
                 if (draggedItem) {{
                     handleAutoScroll(e.clientY);
@@ -2031,7 +2230,6 @@ html_template = f'''<!DOCTYPE html>
             window.addEventListener('blur', stopAutoScroll);
             window.addEventListener('pointerup', stopAutoScroll);
 
-            // Auto-save on label edit
             const tierContainer = document.getElementById('tier-container');
             if (tierContainer) {{
                 tierContainer.addEventListener('blur', function(e) {{
@@ -2058,7 +2256,8 @@ html_template = f'''<!DOCTYPE html>
 </body>
 </html>'''
 
+# Write index.html
 with open("C:/Users/zdog0/.gemini/antigravity/scratch/tierlist-2026/index.html", "w", encoding="utf-8") as f:
-    f.write(html_template)
+    f.write(html_content)
 
-print(f"Generated index.html with new requirements! Total games: {total_count} ({hits_count} hits, {expansions_count} DLC/editions, {antic_count} anticipated). All {matched_count} images embedded.")
+print(f"Generated index.html successfully! Base games: {total_count} ({hits_count} hits, {antic_count} anticipated). Catalog entries: {len(catalog_data)}.")
